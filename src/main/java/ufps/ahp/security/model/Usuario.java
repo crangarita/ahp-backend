@@ -27,12 +27,12 @@ public class Usuario implements Serializable {
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 50)
+    @Size(min = 1, max = 70)
     @Column(name = "email")
     private String email;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 15)
+    @Size(min = 1, max = 20)
     @Column(name = "celular")
     private String celular;
     @Basic(optional = false)
@@ -115,7 +115,7 @@ public class Usuario implements Serializable {
         this.decisor = decisor;
     }
 
-    public Collection<PasswordResetToken> getPasswordResetTokenCollection() {
+    public Collection<PasswordResetToken> passwordResetTokenCollection() {
         return passwordResetTokenCollection;
     }
 
@@ -123,7 +123,15 @@ public class Usuario implements Serializable {
         this.passwordResetTokenCollection = passwordResetTokenCollection;
     }
 
-    public Collection<Alternativa> getAlternativaCollection() {
+    public Collection<Problema> problemaCollection() {
+        return problemaCollection;
+    }
+
+    public void setProblemaCollection(Collection<Problema> problemaCollection) {
+        this.problemaCollection = problemaCollection;
+    }
+
+    public Collection<Alternativa> alternativaCollection() {
         return alternativaCollection;
     }
 
