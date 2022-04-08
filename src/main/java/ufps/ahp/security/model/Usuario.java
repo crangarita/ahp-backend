@@ -115,7 +115,7 @@ public class Usuario implements Serializable {
         this.decisor = decisor;
     }
 
-    public Collection<PasswordResetToken> getPasswordResetTokenCollection() {
+    public Collection<PasswordResetToken> passwordResetTokenCollection() {
         return passwordResetTokenCollection;
     }
 
@@ -123,7 +123,15 @@ public class Usuario implements Serializable {
         this.passwordResetTokenCollection = passwordResetTokenCollection;
     }
 
-    public Collection<Alternativa> getAlternativaCollection() {
+    public Collection<Problema> problemaCollection() {
+        return problemaCollection;
+    }
+
+    public void setProblemaCollection(Collection<Problema> problemaCollection) {
+        this.problemaCollection = problemaCollection;
+    }
+
+    public Collection<Alternativa> alternativaCollection() {
         return alternativaCollection;
     }
 
