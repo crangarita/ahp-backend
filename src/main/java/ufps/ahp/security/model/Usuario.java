@@ -115,9 +115,7 @@ public class Usuario implements Serializable {
         this.decisor = decisor;
     }
 
-//    public Collection<PasswordResetToken> passwordResetTokenCollection() {
-//        return passwordResetTokenCollection;
-//    }
+
 
     public void setPasswordResetTokenCollection(Collection<PasswordResetToken> passwordResetTokenCollection) {
         this.passwordResetTokenCollection = passwordResetTokenCollection;
