@@ -114,7 +114,6 @@ public class AuthController {
 
         usuarioService.guardar(usuario);
         emailServiceImp.enviarEmail("Confirmación de cuenta ",
-
                 "<!DOCTYPE html>\n" +
                         "<html lang=\"en\">\n" +
                         "\n" +
@@ -131,11 +130,11 @@ public class AuthController {
                         "            <img style=\"margin-top: 3rem; width: 190px\"\n" +
                         "                src=\"https://master.d1oc2nyuhwk984.amplifyapp.com/assets/images/logo.png\" alt=\"logo\">\n" +
                         "            <p style=\"margin: 1rem 0; font-size: 25px;\">Confirmación de cuenta</p>\n" +
-                        "            <p style=\"color: #424242;\">Te has registrado en la plataforma, por favor confirma que <br> eres\n" +
+                        "            <p style=\"color: #424242;\">Hola, <b>"+usuario.getNombre()+"</b>, Te has registrado en la plataforma, por favor confirma que <br> eres\n" +
                         "                tú ingresando al siguiente botón.\n" +
                         "            </p>\n" +
                         "            <div style=\"margin: 2rem auto; width: 120px; background-color: #4f46e5; padding: 8px; border-radius: 6px; \">\n" +
-                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"auth/confirmacion/"+usuario.getConfirmationToken()+"\">Continuar</a>\n" +
+                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"confirmation/"+usuario.getConfirmationToken()+"\">Continuar</a>\n" +
                         "            </div>\n" +
                         "            <div style=\"width: 100%; border-top: 2px solid #a5b4fc; padding: 1rem 0\">\n" +
                         "                <p>Copyright © 2022 Analytic Hierarchy Process <br> Todos los derechos reservados.</p>\n" +
@@ -164,10 +163,38 @@ public class AuthController {
         PasswordResetToken passwordResetToken = new PasswordResetToken(u);
         passwordResetTokenService.guardar(passwordResetToken);
 
-        emailServiceImp.enviarEmail("Recuperación de contraseña",
-                "Hola "+u.getNombre()+", Para cambiar tu contraseña ingresa al siguiente link:"
-                        +urlFrontend+"/password-reset/confirmation"+passwordResetToken.getToken()+
-                        "\n Recuerda que este link expirará en 24 horas.",
+        emailServiceImp.enviarEmail("Cambio de contraseña",
+                "<!DOCTYPE html>\n" +
+                        "<html lang=\"en\">\n" +
+                        "\n" +
+                        "<head>\n" +
+                        "    <meta charset=\"UTF-8\">\n" +
+                        "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" +
+                        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                        "    <title>Document</title>\n" +
+                        "</head>\n" +
+                        "\n" +
+                        "<body style=\"width: 800px\">\n" +
+                        "    <div style=\"background-color: #a5b4fc; width: 100%; padding: 3rem 0;\">\n" +
+                        "        <div style=\"text-align: center; background-color: #ffffff; margin: 0 auto; width: 80%; border-radius: 8px;\">\n" +
+                        "            <img style=\"margin-top: 3rem; width: 190px\"\n" +
+                        "                src=\"https://master.d1oc2nyuhwk984.amplifyapp.com/assets/images/logo.png\" alt=\"logo\">\n" +
+                        "            <p style=\"margin: 1rem 0; font-size: 25px;\">Cambio de contraseña</p>\n" +
+                        "            <p style=\"color: #424242;\">Hola, <b>"+u.getNombre()+"</b>, has solicitado cambiar tu contraseña, <br> para cambiar tu contraseña ingresa al siguiente link:  \n" +
+                        "            </p>\n" +
+                        "            <div style=\"margin: 2rem auto; width: 120px; background-color: #4f46e5; padding: 8px; border-radius: 6px; \">\n" +
+                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"password-reset/confirmation"+passwordResetToken.getToken()+"\">Continuar</a>\n" +
+                        "            </div>\n" +
+                        "            <div style=\"width: 100%; border-top: 2px solid #a5b4fc; padding: 1rem 0\">\n" +
+                        "                <p>Copyright © 2022 Analytic Hierarchy Process <br> Todos los derechos reservados.</p>\n" +
+                        "            </div>\n" +
+                        "        </div>\n" +
+                        "    </div>\n" +
+                        "</body>\n" +
+                        "\n" +
+                        "</html>"
+
+                ,
                 u.getEmail());
 
         return ResponseEntity.ok("Mensaje de recuperación enviado al correo");
@@ -188,7 +215,7 @@ public class AuthController {
     }
 
     @PostMapping("/recuperar/{token}")
-    public ResponseEntity<?>cambiarPassword(@PathVariable String token, @RequestBody LoginUsuario loginUsuario){
+    public ResponseEntity<?>cambiarPassword(@PathVariable String token, @RequestBody LoginUsuario loginUsuario) throws MessagingException {
 
         PasswordResetToken passwordResetToken = passwordResetTokenService.buscarToken(token);
 
@@ -214,6 +241,37 @@ public class AuthController {
         if(!u.getEmail().equals(uToken.getEmail())){
             return new ResponseEntity(("El token se encuentra asociado a otro usuario"), HttpStatus.BAD_REQUEST);
         }
+
+        emailServiceImp.enviarEmail("Contraseña actualizada",
+                "<!DOCTYPE html>\n" +
+                        "<html lang=\"en\">\n" +
+                        "\n" +
+                        "<head>\n" +
+                        "    <meta charset=\"UTF-8\">\n" +
+                        "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n" +
+                        "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                        "    <title>Document</title>\n" +
+                        "</head>\n" +
+                        "\n" +
+                        "<body style=\"width: 800px\">\n" +
+                        "    <div style=\"background-color: #a5b4fc; width: 100%; padding: 3rem 0;\">\n" +
+                        "        <div style=\"text-align: center; background-color: #ffffff; margin: 0 auto; width: 80%; border-radius: 8px;\">\n" +
+                        "            <img style=\"margin-top: 3rem; width: 190px\"\n" +
+                        "                src=\"https://master.d1oc2nyuhwk984.amplifyapp.com/assets/images/logo.png\" alt=\"logo\">\n" +
+                        "            <p style=\"margin: 1rem 0; font-size: 25px;\">Cambio de contraseña</p>\n" +
+                        "            <p style=\"color: #424242;\">Hola, <b>"+u.getNombre()+"</b>, se ha cambiado tu contraseña en el sistema.  \n" +
+                        "            </p>\n" +
+                        "            <div style=\"width: 100%; border-top: 2px solid #a5b4fc; padding: 1rem 0\">\n" +
+                        "                <p>Copyright © 2022 Analytic Hierarchy Process <br> Todos los derechos reservados.</p>\n" +
+                        "            </div>\n" +
+                        "        </div>\n" +
+                        "    </div>\n" +
+                        "</body>\n" +
+                        "\n" +
+                        "</html>"
+
+                ,
+                u.getEmail());
 
         u.setPassword(passwordEncoder.encode(loginUsuario.getPassword()));
         usuarioService.guardar(u);
