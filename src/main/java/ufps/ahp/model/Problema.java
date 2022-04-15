@@ -9,6 +9,7 @@ import ufps.ahp.security.model.Usuario;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import javax.persistence.*;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,6 +45,12 @@ public class Problema implements Serializable {
     private Collection<Criterio> criterioCollection;
     @OneToMany(mappedBy = "problema")
     private Collection<Alternativa> alternativaCollection;
+
+    @Column(name="fecha_creacion")
+    private Date fechaCreacion;
+
+    @Column(name="fecha_finalizacion")
+    private Date fechaFinalizacion;
     public Problema() {
     }
 
@@ -53,6 +60,22 @@ public class Problema implements Serializable {
 
     public String getIdProblema() {
         return idProblema;
+    }
+
+    public Date getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public Date getFechaFinalizacion() {
+        return fechaFinalizacion;
+    }
+
+    public void setFechaFinalizacion(Date fechaFinalizacion) {
+        this.fechaFinalizacion = fechaFinalizacion;
     }
 
     public void setIdProblema(String idProblema) {

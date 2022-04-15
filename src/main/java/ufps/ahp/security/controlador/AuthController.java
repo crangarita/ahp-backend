@@ -6,6 +6,7 @@
 package ufps.ahp.security.controlador;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -73,6 +74,12 @@ public class AuthController {
     @Autowired
     DecisorService decisorService;
 
+    @Value("${uribackend}")
+    private String urlBackend;
+
+    @Value("${urifrontend}")
+    private String urlFrontend;
+
     @PostMapping("/nuevo")
     public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult){
         if(bindingResult.hasErrors())
@@ -107,7 +114,7 @@ public class AuthController {
         usuarioService.guardar(usuario);
         emailServiceImp.enviarEmail("Confirmación de cuenta ",
                 "Te has registrado en la plataforma, por favor confirma que eres tú ingresando al siguiente enlace:"
-                        +"http://localhost:8082/auth/confirmacion/"+usuario.getConfirmationToken(),
+                        +urlBackend+"auth/confirmacion/"+usuario.getConfirmationToken(),
                 usuario.getEmail()
         );
 
@@ -128,7 +135,7 @@ public class AuthController {
 
         emailServiceImp.enviarEmail("Recuperación de contraseña",
                 "Hola "+u.getNombre()+", Para cambiar tu contraseña ingresa al siguiente link:"
-                        +"http://localhost:8082/auth/recuperar/"+passwordResetToken.getToken()+
+                        +urlFrontend+"/password-reset/confirmation"+passwordResetToken.getToken()+
                         "\n Recuerda que este link expirará en 24 horas.",
                 u.getEmail());
 
