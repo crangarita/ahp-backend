@@ -14,6 +14,8 @@ import ufps.ahp.services.EmailSenderService;
 import ufps.ahp.services.ProblemaService;
 import ufps.ahp.services.imp.EmailServiceImp;
 
+import javax.mail.MessagingException;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/usuario")
@@ -36,7 +38,7 @@ public class UsuarioRest {
 
 
     @PostMapping("/descisor/{idProblema}")
-    public ResponseEntity<?> agregarDescisor(@RequestBody DescisorDTO descisorDTO, @RequestParam String idProblema){
+    public ResponseEntity<?> agregarDescisor(@RequestBody DescisorDTO descisorDTO, @RequestParam String idProblema) throws MessagingException {
 
         Problema p = problemaService.buscar(idProblema);
 
