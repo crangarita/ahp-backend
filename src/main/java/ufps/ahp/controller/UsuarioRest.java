@@ -1,6 +1,7 @@
 package ufps.ahp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Decisor;
@@ -14,6 +15,7 @@ import ufps.ahp.services.ProblemaService;
 import ufps.ahp.services.imp.EmailServiceImp;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/usuario")
 public class UsuarioRest {
 
@@ -29,6 +31,10 @@ public class UsuarioRest {
     @Autowired
     DecisorService decisorService;
 
+    @Value("${uribackend}")
+    private String uriBackend;
+
+
     @PostMapping("/descisor/{idProblema}")
     public ResponseEntity<?> agregarDescisor(@RequestBody DescisorDTO descisorDTO, @RequestParam String idProblema){
 
@@ -42,7 +48,7 @@ public class UsuarioRest {
 
         emailServiceImp.enviarEmail("Inscripción descisor problema", "Hola, "+descisorDTO.getNombre()+
                 "has sido seleccionado para participar en la votación del problema, ingresa al siguiente link para acceder al problema: "+
-                p.getDescripcion(),descisorDTO.getEmail());
+                p.getDescripcion()+". Por favor ingresa al siguiente link",descisorDTO.getEmail());
         return ResponseEntity.ok("");
     }
     @GetMapping
