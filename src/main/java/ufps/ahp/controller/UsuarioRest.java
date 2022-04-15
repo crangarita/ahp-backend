@@ -15,6 +15,7 @@ import ufps.ahp.services.ProblemaService;
 import ufps.ahp.services.imp.EmailServiceImp;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/usuario")
 public class UsuarioRest {
 
