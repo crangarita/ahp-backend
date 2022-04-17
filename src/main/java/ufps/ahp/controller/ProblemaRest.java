@@ -10,6 +10,7 @@ import ufps.ahp.model.Alternativa;
 import ufps.ahp.model.Criterio;
 import ufps.ahp.model.Problema;
 import ufps.ahp.model.PuntuacionCriterio;
+import ufps.ahp.security.model.Usuario;
 import ufps.ahp.services.AlternativaService;
 import ufps.ahp.services.CriterioService;
 import ufps.ahp.services.ProblemaService;
@@ -47,6 +48,9 @@ public class ProblemaRest {
         }
 
         problema.setIdProblema(UUID.randomUUID().toString());
+
+        log.info(problema.toString());
+
         problemaService.guardar(problema);
         return ResponseEntity.ok("Problema creado");
     }
