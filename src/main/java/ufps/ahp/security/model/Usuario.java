@@ -88,6 +88,11 @@ public class Usuario implements Serializable {
         this.email = email;
         this.password = password;
     }
+
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
     public Usuario(){}
 
     public Date getFecha() {

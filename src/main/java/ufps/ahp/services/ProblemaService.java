@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ProblemaService {
     public List<Problema> listar();
+    public boolean existeDecisor(String email, String idProblema);
     public Problema buscar(String idProblema);
     public List<Criterio> criteriosPorProblema(String idProblema);
     public List<Alternativa> alternativasPorProblema(String idProblema);
