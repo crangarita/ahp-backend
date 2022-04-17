@@ -21,7 +21,7 @@ public class LoginUsuario {
         return email;
     }
 
-    public void setNombreUsuario(String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 

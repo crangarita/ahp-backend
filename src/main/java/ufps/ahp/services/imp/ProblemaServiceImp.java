@@ -21,6 +21,11 @@ public class ProblemaServiceImp implements ProblemaService {
     }
 
     @Override
+    public boolean existeDecisor(String email, String idProblema) {
+        return problemaDAO.existeDecisor(email,idProblema)!=null;
+    }
+
+    @Override
     public Problema buscar(String idProblema) {
         return problemaDAO.getById(idProblema);
     }
