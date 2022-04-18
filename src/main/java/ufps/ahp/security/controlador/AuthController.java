@@ -183,7 +183,7 @@ public class AuthController {
                         "            <p style=\"color: #424242;\">Hola, <b>"+u.getNombre()+"</b>, has solicitado cambiar tu contraseña, <br> para cambiar tu contraseña ingresa al siguiente link:  \n" +
                         "            </p>\n" +
                         "            <div style=\"margin: 2rem auto; width: 120px; background-color: #4f46e5; padding: 8px; border-radius: 6px; \">\n" +
-                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"password-reset/confirmation"+passwordResetToken.getToken()+"\">Continuar</a>\n" +
+                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"password-reset/confirmation/"+passwordResetToken.getToken()+"\">Continuar</a>\n" +
                         "            </div>\n" +
                         "            <div style=\"width: 100%; border-top: 2px solid #a5b4fc; padding: 1rem 0\">\n" +
                         "                <p>Copyright © 2022 Analytic Hierarchy Process <br> Todos los derechos reservados.</p>\n" +
@@ -218,6 +218,10 @@ public class AuthController {
     public ResponseEntity<?>cambiarPassword(@PathVariable String token, @RequestBody LoginUsuario loginUsuario) throws MessagingException {
 
         PasswordResetToken passwordResetToken = passwordResetTokenService.buscarToken(token);
+        Usuario uToken = usuarioService.findByResetPassword(token);
+
+
+
 
         if(passwordResetToken == null)
             return new ResponseEntity(("El token no existe"), HttpStatus.NOT_FOUND);
@@ -225,6 +229,7 @@ public class AuthController {
         if(passwordResetToken.getFechaExpiracion().before(new Date()))
             return new ResponseEntity(("El token ha expirado"), HttpStatus.BAD_REQUEST);
 
+        loginUsuario.setEmail(passwordResetToken.getUsuario().getEmail());
 
         Usuario u = usuarioService.findByEmail(loginUsuario.getEmail());
 
@@ -232,7 +237,6 @@ public class AuthController {
             return new ResponseEntity(("El correo no existe"), HttpStatus.BAD_REQUEST);
         }
 
-        Usuario uToken = usuarioService.findByResetPassword(token);
 
         if(uToken==null){
             return new ResponseEntity(("El token no está asociado a ningun usuario"), HttpStatus.BAD_REQUEST);
@@ -241,6 +245,13 @@ public class AuthController {
         if(!u.getEmail().equals(uToken.getEmail())){
             return new ResponseEntity(("El token se encuentra asociado a otro usuario"), HttpStatus.BAD_REQUEST);
         }
+
+        log.info(loginUsuario.getPassword());
+        log.info(passwordResetToken.getUsuario().getEmail());
+        log.info(uToken.getEmail());
+
+        u.setPassword(passwordEncoder.encode(loginUsuario.getPassword()));
+        usuarioService.guardar(u);
 
         emailServiceImp.enviarEmail("Contraseña actualizada",
                 "<!DOCTYPE html>\n" +
@@ -273,8 +284,7 @@ public class AuthController {
                 ,
                 u.getEmail());
 
-        u.setPassword(passwordEncoder.encode(loginUsuario.getPassword()));
-        usuarioService.guardar(u);
+
 
         passwordResetTokenService.eliminar(passwordResetToken);
 
