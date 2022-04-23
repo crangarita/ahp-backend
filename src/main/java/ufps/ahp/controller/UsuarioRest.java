@@ -22,7 +22,7 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
+@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
 @RequestMapping(value= "/usuario",produces = MediaType.APPLICATION_JSON_VALUE)
 public class UsuarioRest {
 

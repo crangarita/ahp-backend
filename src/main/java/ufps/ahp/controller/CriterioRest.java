@@ -15,7 +15,7 @@ import javax.validation.Valid;
 
 @RequestMapping(value="/criterio", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
-@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
+@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
 
 public class CriterioRest {
     @Autowired
