@@ -48,8 +48,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(value="/auth", produces = MediaType.APPLICATION_JSON_VALUE)
-//@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
-@CrossOrigin
+@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
 @Slf4j
 public class AuthController {
 
