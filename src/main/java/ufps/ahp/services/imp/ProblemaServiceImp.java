@@ -1,5 +1,7 @@
 package ufps.ahp.services.imp;
 
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ufps.ahp.dao.ProblemaDAO;
@@ -10,6 +12,7 @@ import ufps.ahp.services.ProblemaService;
 
 import java.util.List;
 @Service
+@Slf4j
 public class ProblemaServiceImp implements ProblemaService {
 
     @Autowired
@@ -27,6 +30,7 @@ public class ProblemaServiceImp implements ProblemaService {
 
     @Override
     public Problema buscar(String idProblema) {
+        log.info(idProblema);
         return problemaDAO.getById(idProblema);
     }
 

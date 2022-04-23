@@ -46,6 +46,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/auth")
+//@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
 @CrossOrigin
 @Slf4j
 public class AuthController {
@@ -95,8 +96,7 @@ public class AuthController {
 
         Set<Rol> roles = new HashSet<>();
         roles.add(rolService.getByRolNombre(Rol.RolNombre.ROLE_USER).get());
-        if(nuevoUsuario.getRoles().contains("admin"))
-            roles.add(rolService.getByRolNombre(Rol.RolNombre.ROLE_ADMIN).get());
+        roles.add(rolService.getByRolNombre(Rol.RolNombre.ROLE_ADMIN).get());
 
         usuario.setRoles(roles);
         usuario.setCelular(nuevoUsuario.getCelular());
@@ -134,7 +134,7 @@ public class AuthController {
                         "                tú ingresando al siguiente botón.\n" +
                         "            </p>\n" +
                         "            <div style=\"margin: 2rem auto; width: 120px; background-color: #4f46e5; padding: 8px; border-radius: 6px; \">\n" +
-                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"confirmation/"+usuario.getConfirmationToken()+"\">Continuar</a>\n" +
+                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"login/confirmation/"+usuario.getConfirmationToken()+"\">Continuar</a>\n" +
                         "            </div>\n" +
                         "            <div style=\"width: 100%; border-top: 2px solid #a5b4fc; padding: 1rem 0\">\n" +
                         "                <p>Copyright © 2022 Analytic Hierarchy Process <br> Todos los derechos reservados.</p>\n" +
@@ -159,6 +159,9 @@ public class AuthController {
         if(u==null)
             return new ResponseEntity(("El email no existe"), HttpStatus.NOT_FOUND);
 
+        if(u.passwordResetTokenCollection().size()>0){
+            return new ResponseEntity(("Ya hay una solicitud de reestablecimiento pendiente"), HttpStatus.BAD_REQUEST);
+        }
 
         PasswordResetToken passwordResetToken = new PasswordResetToken(u);
         passwordResetTokenService.guardar(passwordResetToken);
@@ -220,30 +223,27 @@ public class AuthController {
         PasswordResetToken passwordResetToken = passwordResetTokenService.buscarToken(token);
         Usuario uToken = usuarioService.findByResetPassword(token);
 
-
-
-
         if(passwordResetToken == null)
-            return new ResponseEntity(("El token no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity("El token no existe", HttpStatus.NOT_FOUND);
 
         if(passwordResetToken.getFechaExpiracion().before(new Date()))
-            return new ResponseEntity(("El token ha expirado"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("El token ha expirado", HttpStatus.BAD_REQUEST);
 
         loginUsuario.setEmail(passwordResetToken.getUsuario().getEmail());
 
         Usuario u = usuarioService.findByEmail(loginUsuario.getEmail());
 
         if(u==null){
-            return new ResponseEntity(("El correo no existe"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("El correo no existe", HttpStatus.BAD_REQUEST);
         }
 
 
         if(uToken==null){
-            return new ResponseEntity(("El token no está asociado a ningun usuario"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("El token no está asociado a ningun usuario", HttpStatus.BAD_REQUEST);
         }
 
         if(!u.getEmail().equals(uToken.getEmail())){
-            return new ResponseEntity(("El token se encuentra asociado a otro usuario"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity("El token se encuentra asociado a otro usuario", HttpStatus.BAD_REQUEST);
         }
 
         log.info(loginUsuario.getPassword());

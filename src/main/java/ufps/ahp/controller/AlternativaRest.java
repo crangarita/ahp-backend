@@ -12,7 +12,8 @@ import ufps.ahp.services.AlternativaService;
 
 @RequestMapping("/alternativa")
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
+
 public class AlternativaRest {
 
     @Autowired

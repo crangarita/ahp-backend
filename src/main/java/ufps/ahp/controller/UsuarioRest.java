@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Decisor;
 import ufps.ahp.model.Problema;
@@ -16,9 +17,10 @@ import ufps.ahp.services.ProblemaService;
 import ufps.ahp.services.imp.EmailServiceImp;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
 @RequestMapping("/usuario")
 public class UsuarioRest {
 
@@ -42,6 +44,18 @@ public class UsuarioRest {
     private String urlFrontend;
 
 
+    @GetMapping("/usuarioPorID/{idUsuario}")
+    public ResponseEntity<?> getUsuarioId(@PathVariable int idUsuario){
+
+        Usuario u = usuarioService.getById(idUsuario).orElse(null);
+
+        if(u==null){
+            return new ResponseEntity("Email no encontrado",HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(u);
+    }
+
     @GetMapping("/usuarioPorEmail/{email}")
     public ResponseEntity<?> getUsuarioByEmail(@PathVariable String email){
 
@@ -52,6 +66,18 @@ public class UsuarioRest {
         }
 
         return ResponseEntity.ok(u);
+    }
+
+    @GetMapping("/problemas/{email}")
+    public ResponseEntity<?> getProblemasByUsuario(@PathVariable String email){
+
+        Usuario u = usuarioService.findByEmail(email);
+
+        if(u==null){
+            return new ResponseEntity("Email no encontrado",HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(u.problemaCollection());
     }
 
     @PostMapping("/descisor/{idProblema}")
@@ -107,5 +133,20 @@ public class UsuarioRest {
         return ResponseEntity.ok(usuarioService.listar());
     }
 
+
+    @PutMapping
+    public ResponseEntity<?> editar(@RequestBody @Valid Usuario usuario, BindingResult br){
+
+        if(br.hasErrors()){
+            return new ResponseEntity<>(br.getAllErrors(),HttpStatus.BAD_REQUEST);
+        }
+
+        if(usuario == null){
+            return new ResponseEntity("Datos incorrectos",HttpStatus.BAD_REQUEST);
+        }
+
+        usuarioService.guardar(usuario);
+        return ResponseEntity.ok("Usuario editado");
+    }
 
 }
