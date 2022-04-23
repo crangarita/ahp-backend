@@ -15,4 +15,7 @@ public interface ProblemaDAO extends JpaRepository<Problema, String> {
 
     @Query(value = "SELECT d FROM Decisor d, Problema p WHERE d.email = :email and p.idProblema=:idProblema ")
     Decisor existeDecisor(@Param("email") String email, @Param("idProblema") String idProblema);
+
+    @Query(value="select dp.decisor from DecisorProblema dp where dp.problema=:idProblema")
+    List<Decisor> decisorPorProblema (@Param("idProblema")String idProblema);
 }

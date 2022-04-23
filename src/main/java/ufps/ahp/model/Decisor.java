@@ -48,12 +48,15 @@ public class Decisor implements Serializable {
     @Column(name = "email")
     private String email;
     @JoinColumn(name = "usuario", referencedColumnName = "id_usuario")
-    @OneToOne(optional = false)
+    @OneToOne(optional = true)
     private Usuario usuario;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "decisor")
     private Collection<Puntuacion> puntuacionCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "decisor")
     private Collection<PuntuacionAlternativa> puntuacionAlternativaCollection;
+
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "decisor")
+    private Collection<DecisorProblema> decisorProblemas;
 
     public Decisor() {
     }
@@ -62,9 +65,23 @@ public class Decisor implements Serializable {
         this.idDecisor = idDecisor;
     }
 
+    public Decisor(String nombre, String email,Usuario usuario) {
+        this.nombre = nombre;
+        this.email = email;
+        this.usuario = usuario;
+    }
     public Decisor(String nombre, String email) {
         this.nombre = nombre;
         this.email = email;
+    }
+
+
+    public Collection<DecisorProblema> decisorProblemas() {
+        return decisorProblemas;
+    }
+
+    public void setDecisorProblemas(Collection<DecisorProblema> decisorProblemas) {
+        this.decisorProblemas = decisorProblemas;
     }
 
     public Integer getIdDecisor() {
@@ -92,7 +109,7 @@ public class Decisor implements Serializable {
     }
 
 
-    public Usuario getUsuario() {
+    public Usuario usuario() {
         return usuario;
     }
 

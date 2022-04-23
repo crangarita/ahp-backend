@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
+//@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
+@CrossOrigin
 @RequestMapping(value="/problema" ,produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 
