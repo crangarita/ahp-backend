@@ -1,19 +1,19 @@
-package ufps.ahp.model;
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package ufps.ahp.model;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ufps.ahp.security.model.Usuario;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.*;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -21,11 +21,12 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "problema")
-@XmlRootElement
+@JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
 @NamedQueries({
         @NamedQuery(name = "Problema.findAll", query = "SELECT p FROM Problema p"),
         @NamedQuery(name = "Problema.findByIdProblema", query = "SELECT p FROM Problema p WHERE p.idProblema = :idProblema"),
-        @NamedQuery(name = "Problema.findByUsuario", query = "SELECT p FROM Problema p WHERE p.usuario = :usuario")})
+        @NamedQuery(name = "Problema.findByFechaCreacion", query = "SELECT p FROM Problema p WHERE p.fechaCreacion = :fechaCreacion"),
+        @NamedQuery(name = "Problema.findByFechaFinalizacion", query = "SELECT p FROM Problema p WHERE p.fechaFinalizacion = :fechaFinalizacion")})
 public class Problema implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -33,24 +34,50 @@ public class Problema implements Serializable {
     @Basic(optional = false)
     @Column(name = "id_problema")
     private String idProblema;
-    @JoinColumn(name = "usuario", referencedColumnName = "id_usuario")
-    @ManyToOne(optional = false)
-    private Usuario usuario;
     @Lob
-    @Size(max = 16777215)
     @Column(name = "descripcion")
     private String descripcion;
+    @Column(name = "fecha_creacion")
+    @Temporal(TemporalType.DATE)
+    @NotNull
+    private Date fechaCreacion;
+    @Column(name = "fecha_finalizacion")
+    @Temporal(TemporalType.DATE)
+    @NotNull
+    private Date fechaFinalizacion;
+    @JoinColumn(name = "usuario", referencedColumnName = "id_usuario")
+    @ManyToOne
+    private Usuario usuario;
     @OneToMany(mappedBy = "problema")
     private Collection<Criterio> criterioCollection;
     @OneToMany(mappedBy = "problema")
     private Collection<Alternativa> alternativaCollection;
 
-    @Column(name="fecha_creacion")
-    private Date fechaCreacion;
-
-    @Column(name="fecha_finalizacion")
-    private Date fechaFinalizacion;
     public Problema() {
+    }
+
+    public Problema(String idProblema, String descripcion, Date fechaCreacion, Date fechaFinalizacion, Usuario usuario) {
+        this.idProblema = idProblema;
+        this.descripcion = descripcion;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaFinalizacion = fechaFinalizacion;
+        this.usuario = usuario;
+    }
+
+    public Collection<Criterio> criterioCollection() {
+        return criterioCollection;
+    }
+
+    public void setCriterioCollection(Collection<Criterio> criterioCollection) {
+        this.criterioCollection = criterioCollection;
+    }
+
+    public Collection<Alternativa> alternativaCollection() {
+        return alternativaCollection;
+    }
+
+    public void setAlternativaCollection(Collection<Alternativa> alternativaCollection) {
+        this.alternativaCollection = alternativaCollection;
     }
 
     public Problema(String idProblema) {
@@ -59,6 +86,18 @@ public class Problema implements Serializable {
 
     public String getIdProblema() {
         return idProblema;
+    }
+
+    public void setIdProblema(String idProblema) {
+        this.idProblema = idProblema;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public Date getFechaCreacion() {
@@ -77,10 +116,6 @@ public class Problema implements Serializable {
         this.fechaFinalizacion = fechaFinalizacion;
     }
 
-    public void setIdProblema(String idProblema) {
-        this.idProblema = idProblema;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
@@ -88,31 +123,6 @@ public class Problema implements Serializable {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public Collection<Criterio> criterio() {
-        return criterioCollection;
-    }
-
-    public void setCriterioCollection(Collection<Criterio> criterioCollection) {
-        this.criterioCollection = criterioCollection;
-    }
-
-    public Collection<Alternativa> alternativa() {
-        return alternativaCollection;
-    }
-
-    public void setAlternativaCollection(Collection<Alternativa> alternativaCollection) {
-        this.alternativaCollection = alternativaCollection;
-    }
-
 
     @Override
     public int hashCode() {
@@ -136,7 +146,7 @@ public class Problema implements Serializable {
 
     @Override
     public String toString() {
-        return "com.example.demo.rest.Problema[ idProblema=" + idProblema + " ]";
+        return "Problema[ idProblema=" + idProblema + " ]";
     }
 
 }

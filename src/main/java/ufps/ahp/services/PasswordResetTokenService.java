@@ -9,4 +9,6 @@ public interface PasswordResetTokenService {
     public PasswordResetToken buscarToken(String token);
     public void guardar(PasswordResetToken ct);
     public void eliminar(PasswordResetToken ct);
+    public void eliminarByToken(String ct);
+
 }

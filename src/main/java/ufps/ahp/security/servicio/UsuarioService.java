@@ -29,6 +29,9 @@ public class UsuarioService {
     public Optional<Usuario> getByEmail(String email){
         return usuarioRepository.findByEmail(email);
     }
+    public Optional<Usuario> getById(int id){
+        return usuarioRepository.findById(id);
+    }
 
     public Usuario findByConfirmationToken(String token){ return usuarioRepository.findUsuarioByConfirmationToken(token);}
     public Usuario findByResetPassword(String token){ return usuarioRepository.encontrarUsuarioPorToken(token);}
