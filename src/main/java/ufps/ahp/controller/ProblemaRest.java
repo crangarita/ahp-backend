@@ -4,6 +4,7 @@ package ufps.ahp.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import ufps.ahp.model.Alternativa;
 import ufps.ahp.model.Criterio;
 import ufps.ahp.model.Problema;
 import ufps.ahp.model.PuntuacionCriterio;
+import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.security.model.Usuario;
 import ufps.ahp.security.servicio.UsuarioService;
 import ufps.ahp.services.AlternativaService;
@@ -23,8 +25,8 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
-@RequestMapping("/problema")
+//@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
+@RequestMapping(value="/problema" ,produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 public class ProblemaRest {
 
@@ -60,23 +62,23 @@ public class ProblemaRest {
         }
 
         if(problema == null){
-            return new ResponseEntity("Datos incorrectos",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
         }
         problema.setIdProblema(UUID.randomUUID().toString());
         problema.setFechaCreacion(new Date());
         problemaService.guardar(problema);
-        return ResponseEntity.ok("Problema creado");
+        return ResponseEntity.ok(new Mensaje("Problema creado"));
     }
     @DeleteMapping(path = "/{idProblema}")
     public ResponseEntity<?> eliminarProblema(@PathVariable String idProblema){
 
         Problema p = problemaService.buscar(idProblema);
         if(p == null){
-            return new ResponseEntity("El problema no existe",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El problema no existe"),HttpStatus.BAD_REQUEST);
         }
         problemaService.eliminar(p);
 
-        return ResponseEntity.ok("Problema #"+p.getIdProblema()+" eliminado");
+        return ResponseEntity.ok(new Mensaje("Problema #"+p.getIdProblema()+" eliminado"));
     }
 
     @PutMapping
@@ -87,7 +89,7 @@ public class ProblemaRest {
         }
 
         if(problema == null){
-            return new ResponseEntity("Datos incorrectos",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
         }
 
         problema.setUsuario(usuarioService.getById(problema.getUsuario().getIdUsuario()).orElse(null));

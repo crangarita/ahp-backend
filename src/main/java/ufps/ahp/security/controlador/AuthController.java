@@ -7,6 +7,7 @@ package ufps.ahp.security.controlador;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,7 @@ import ufps.ahp.model.Decisor;
 import ufps.ahp.model.PasswordResetToken;
 import ufps.ahp.security.dto.JwtDto;
 import ufps.ahp.security.dto.LoginUsuario;
+import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.security.dto.NuevoUsuario;
 import ufps.ahp.security.jwt.JwtProvider;
 import ufps.ahp.security.model.Rol;
@@ -45,7 +47,7 @@ import java.util.*;
  * @author santi
  */
 @RestController
-@RequestMapping("/auth")
+@RequestMapping(value="/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 //@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
 @CrossOrigin
 @Slf4j
@@ -85,9 +87,9 @@ public class AuthController {
     @PostMapping("/nuevo")
     public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult) throws MessagingException {
         if(bindingResult.hasErrors())
-            return new ResponseEntity("campos mal puestos o email inválido", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("campos mal puestos o email inválido"), HttpStatus.BAD_REQUEST);
         if(usuarioService.existsByEmail(nuevoUsuario.getEmail()))
-            return new ResponseEntity(("ese email ya existe"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("ese email ya existe"), HttpStatus.BAD_REQUEST);
 
         Usuario usuario =
                 new Usuario(nuevoUsuario.getEmail(),
@@ -157,10 +159,16 @@ public class AuthController {
         Usuario u = usuarioService.findByEmail(email);
 
         if(u==null)
-            return new ResponseEntity(("El email no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El email no existe"), HttpStatus.NOT_FOUND);
 
         if(u.passwordResetTokenCollection().size()>0){
-            return new ResponseEntity(("Ya hay una solicitud de reestablecimiento pendiente"), HttpStatus.BAD_REQUEST);
+            PasswordResetToken passwordResetToken = u.passwordResetTokenCollection().iterator().next();
+            if(passwordResetToken.getFechaExpiracion().before(new Date())){
+                passwordResetTokenService.eliminarByToken(passwordResetToken.getToken());
+            }else{
+                return new ResponseEntity(new Mensaje("Ya hay una solicitud de reestablecimiento pendiente"), HttpStatus.BAD_REQUEST);
+
+            }
         }
 
         PasswordResetToken passwordResetToken = new PasswordResetToken(u);
@@ -200,7 +208,7 @@ public class AuthController {
                 ,
                 u.getEmail());
 
-        return ResponseEntity.ok("Mensaje de recuperación enviado al correo");
+        return ResponseEntity.ok(new Mensaje("Mensaje de recuperación enviado al correo"));
     }
 
     @GetMapping("/recuperar/{token}") //petición que recibe el backend de parte del frontend, recordar cambiar el link de la linea 131 a un URL del frontend
@@ -209,10 +217,10 @@ public class AuthController {
         PasswordResetToken passwordResetToken = passwordResetTokenService.buscarToken(token);
 
         if(passwordResetToken == null)
-            return new ResponseEntity(("El token no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El token no existe"), HttpStatus.NOT_FOUND);
 
         if(passwordResetToken.getFechaExpiracion().before(new Date()))
-            return new ResponseEntity(("El token ha expirado"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El token ha expirado"), HttpStatus.BAD_REQUEST);
 
         return ResponseEntity.ok(token);
     }
@@ -224,26 +232,26 @@ public class AuthController {
         Usuario uToken = usuarioService.findByResetPassword(token);
 
         if(passwordResetToken == null)
-            return new ResponseEntity("El token no existe", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El token no existe"), HttpStatus.NOT_FOUND);
 
         if(passwordResetToken.getFechaExpiracion().before(new Date()))
-            return new ResponseEntity("El token ha expirado", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El token ha expirado"), HttpStatus.BAD_REQUEST);
 
         loginUsuario.setEmail(passwordResetToken.getUsuario().getEmail());
 
         Usuario u = usuarioService.findByEmail(loginUsuario.getEmail());
 
         if(u==null){
-            return new ResponseEntity("El correo no existe", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El correo no existe"), HttpStatus.BAD_REQUEST);
         }
 
 
         if(uToken==null){
-            return new ResponseEntity("El token no está asociado a ningun usuario", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El token no está asociado a ningun usuario"), HttpStatus.BAD_REQUEST);
         }
 
         if(!u.getEmail().equals(uToken.getEmail())){
-            return new ResponseEntity("El token se encuentra asociado a otro usuario", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El token se encuentra asociado a otro usuario"), HttpStatus.BAD_REQUEST);
         }
 
         log.info(loginUsuario.getPassword());
@@ -283,10 +291,8 @@ public class AuthController {
 
                 ,
                 u.getEmail());
+        passwordResetTokenService.eliminarByToken(passwordResetToken.getToken());
 
-
-
-        passwordResetTokenService.eliminar(passwordResetToken);
 
         return ResponseEntity.ok(token);
     }
@@ -296,28 +302,28 @@ public class AuthController {
         Usuario usuario = usuarioService.findByConfirmationToken(token);
 
         if(usuario==null){
-            return new ResponseEntity("Error, Token no encontrado", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Error, Token no encontrado"), HttpStatus.NOT_FOUND);
         }
 
         usuario.setEstado(true);
         usuarioService.guardar(usuario);
 
-        return ResponseEntity.ok("Usuario verificado correctamente");
+        return ResponseEntity.ok(new Mensaje("Usuario verificado correctamente"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario, BindingResult bindingResult){
         if(bindingResult.hasErrors())
-            return new ResponseEntity(("campos mal puestos"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("campos mal puestos"), HttpStatus.BAD_REQUEST);
 
         Usuario usuario = usuarioService.getByEmail(loginUsuario.getEmail()).orElse(null);
 
         if(usuario == null){
-            return new ResponseEntity(("El nombre de usuario no existe"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El nombre de usuario no existe"), HttpStatus.NOT_FOUND);
         }
 
         if(!usuario.isEstado()){
-            return new ResponseEntity(("El usuario se encuentra deshabilitado"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("El usuario se encuentra deshabilitado"), HttpStatus.NOT_FOUND);
         }
 
         Authentication authentication =

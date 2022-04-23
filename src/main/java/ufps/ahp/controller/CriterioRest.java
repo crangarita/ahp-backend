@@ -2,16 +2,18 @@ package ufps.ahp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Criterio;
 import ufps.ahp.model.Problema;
+import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.services.CriterioService;
 
 import javax.validation.Valid;
 
-@RequestMapping("/criterio")
+@RequestMapping(value="/criterio", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 @CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
 
@@ -34,11 +36,11 @@ public class CriterioRest {
 
         Criterio p = criterioService.buscar(idCriterio);
         if(p == null){
-            return new ResponseEntity("El Criterio no existe", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("El Criterio no existe"), HttpStatus.BAD_REQUEST);
         }
         criterioService.eliminar(p);
 
-        return ResponseEntity.ok("Criterio #"+p.getIdCriterio()+" eliminado");
+        return ResponseEntity.ok(new Mensaje("Criterio #"+p.getIdCriterio()+" eliminado"));
     }
     @PutMapping(path = "/{idCriterio}")
     public ResponseEntity<?> editarCriterio(@RequestBody @Valid Criterio criterio, BindingResult br){
@@ -49,6 +51,6 @@ public class CriterioRest {
 
         criterioService.guardar(criterio);
 
-        return ResponseEntity.ok("Criterio editado");
+        return ResponseEntity.ok(new Mensaje("Criterio editado"));
     }
 }

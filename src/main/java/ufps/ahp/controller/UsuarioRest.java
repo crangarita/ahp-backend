@@ -3,12 +3,14 @@ package ufps.ahp.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Decisor;
 import ufps.ahp.model.Problema;
 import ufps.ahp.model.dto.DescisorDTO;
+import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.security.model.Usuario;
 import ufps.ahp.security.servicio.UsuarioService;
 import ufps.ahp.services.DecisorService;
@@ -20,8 +22,8 @@ import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
-@RequestMapping("/usuario")
+//@CrossOrigin(origins = "http://ahp-env.eba-mumapkxa.us-east-1.elasticbeanstalk.com/")
+@RequestMapping(value= "/usuario",produces = MediaType.APPLICATION_JSON_VALUE)
 public class UsuarioRest {
 
     @Autowired
@@ -50,7 +52,7 @@ public class UsuarioRest {
         Usuario u = usuarioService.getById(idUsuario).orElse(null);
 
         if(u==null){
-            return new ResponseEntity("Email no encontrado",HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Email no encontrado"),HttpStatus.NOT_FOUND);
         }
 
         return ResponseEntity.ok(u);
@@ -62,7 +64,7 @@ public class UsuarioRest {
         Usuario u = usuarioService.findByEmail(email);
 
         if(u==null){
-            return new ResponseEntity("Email no encontrado",HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Email no encontrado"),HttpStatus.NOT_FOUND);
         }
 
         return ResponseEntity.ok(u);
@@ -74,7 +76,7 @@ public class UsuarioRest {
         Usuario u = usuarioService.findByEmail(email);
 
         if(u==null){
-            return new ResponseEntity("Email no encontrado",HttpStatus.NOT_FOUND);
+            return new ResponseEntity(new Mensaje("Email no encontrado"),HttpStatus.NOT_FOUND);
         }
 
         return ResponseEntity.ok(u.problemaCollection());
@@ -125,7 +127,7 @@ public class UsuarioRest {
                         "</html>"
 
                 ,descisorDTO.getEmail());
-        return ResponseEntity.ok("");
+        return ResponseEntity.ok(new Mensaje("Inscripción realizada correctamente"));
     }
 
     @GetMapping
@@ -142,11 +144,11 @@ public class UsuarioRest {
         }
 
         if(usuario == null){
-            return new ResponseEntity("Datos incorrectos",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
         }
 
         usuarioService.guardar(usuario);
-        return ResponseEntity.ok("Usuario editado");
+        return ResponseEntity.ok(new Mensaje("Usuario editado"));
     }
 
 }
