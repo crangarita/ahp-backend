@@ -43,6 +43,7 @@ C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\dto\
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\DecisorService.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\jwt\JwtEntryPoint.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\ProblemaService.java
+C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\dto\Mensaje.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\imp\EmailServiceImp.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\dao\AlternativaDAO.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\model\Rol.java

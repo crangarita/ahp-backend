@@ -48,7 +48,8 @@ import java.util.*;
  */
 @RestController
 @RequestMapping(value="/auth", produces = MediaType.APPLICATION_JSON_VALUE)
-@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
+@CrossOrigin
+//@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
 @Slf4j
 public class AuthController {
 
@@ -221,7 +222,7 @@ public class AuthController {
         if(passwordResetToken.getFechaExpiracion().before(new Date()))
             return new ResponseEntity(new Mensaje("El token ha expirado"), HttpStatus.BAD_REQUEST);
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new Mensaje("Contraseña cambiada con exito"));
     }
 
     @PostMapping("/recuperar/{token}")
@@ -293,7 +294,7 @@ public class AuthController {
         passwordResetTokenService.eliminarByToken(passwordResetToken.getToken());
 
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(new Mensaje("Contraseña cambiada con exito"));
     }
 
     @GetMapping("/confirmacion/{token}")
