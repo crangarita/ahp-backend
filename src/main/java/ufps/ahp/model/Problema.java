@@ -53,6 +53,11 @@ public class Problema implements Serializable {
     @OneToMany(mappedBy = "problema")
     private Collection<Alternativa> alternativaCollection;
 
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "problema")
+    private Collection<DecisorProblema> decisorProblemas;
+
+
+
     public Problema() {
     }
 
@@ -62,6 +67,14 @@ public class Problema implements Serializable {
         this.fechaCreacion = fechaCreacion;
         this.fechaFinalizacion = fechaFinalizacion;
         this.usuario = usuario;
+    }
+
+    public Collection<DecisorProblema> decisorProblemas() {
+        return decisorProblemas;
+    }
+
+    public void setDecisorProblemas(Collection<DecisorProblema> decisorProblemas) {
+        this.decisorProblemas = decisorProblemas;
     }
 
     public Collection<Criterio> criterioCollection() {

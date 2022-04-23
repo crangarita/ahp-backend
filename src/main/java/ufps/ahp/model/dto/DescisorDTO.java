@@ -4,12 +4,8 @@ public class DescisorDTO {
 
     String email;
     String nombre;
+    String problema;
 
-    public DescisorDTO(String email, String nombre) {
-        this.email = email;
-        this.nombre = nombre;
-    }
-    public DescisorDTO(){}
     public String getEmail() {
         return email;
     }
@@ -24,5 +20,13 @@ public class DescisorDTO {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getProblema() {
+        return problema;
+    }
+
+    public void setProblema(String problema) {
+        this.problema = problema;
     }
 }
