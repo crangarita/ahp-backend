@@ -37,6 +37,10 @@ public class DecisorProblema implements Serializable {
         this.decisor = decisor;
         this.problema = problema;
     }
+    public DecisorProblema(Decisor decisor, Problema problema) {
+        this.decisor = decisor;
+        this.problema = problema;
+    }
 
     public int getIdDecisorProblema() {
         return idDecisorProblema;

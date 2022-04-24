@@ -6,11 +6,13 @@ C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\s
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\AhpApplication.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\PasswordResetToken.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\jwt\JwtProvider.java
+C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\controller\DecisorRest.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\PuntuacionAlternativa.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\Decisor.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\jwt\JwtTokenFilter.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\Puntuacion.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\controller\UsuarioRest.java
+C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\dao\DecisorProblemaDAO.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\config\SwaggerConfig.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\dao\DecisorDAO.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\AlternativaService.java
@@ -18,6 +20,7 @@ C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\controller
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\controller\ProblemaRest.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\dao\UsuarioRepository.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\PasswordResetTokenService.java
+C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\imp\DecisorProblemaServiceImp.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\controlador\AuthController.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\PuntuacionCriterio.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\dao\CriterioDAO.java
@@ -45,9 +48,11 @@ C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\j
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\ProblemaService.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\dto\Mensaje.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\imp\EmailServiceImp.java
+C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\DecisorProblema.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\dao\AlternativaDAO.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\model\Rol.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\dao\ProblemaDAO.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\imp\AlternativaServiceImp.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\model\PuntuacionAlternativaCriterio.java
+C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\services\DecisorProblemaService.java
 C:\Users\santi\OneDrive\Escritorio\ahp-backend\src\main\java\ufps\ahp\security\dto\NuevoUsuario.java

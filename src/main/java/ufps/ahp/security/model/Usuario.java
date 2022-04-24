@@ -112,7 +112,7 @@ public class Usuario implements Serializable {
     }
 
 
-    public Decisor getDecisor() {
+    public Decisor decisor() {
         return decisor;
     }
 

@@ -1,0 +1,6 @@
+server:
+  port: 5000
+cloud:
+  aws:
+    region:
+      static: N. Virginia
