@@ -7,11 +7,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Decisor;
+import ufps.ahp.model.DecisorProblema;
 import ufps.ahp.model.Problema;
 import ufps.ahp.model.dto.DescisorDTO;
 import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.security.model.Usuario;
 import ufps.ahp.security.servicio.UsuarioService;
+import ufps.ahp.services.DecisorProblemaService;
 import ufps.ahp.services.DecisorService;
 import ufps.ahp.services.ProblemaService;
 import ufps.ahp.services.imp.EmailServiceImp;
@@ -33,6 +35,8 @@ public class DecisorRest {
     @Autowired
     UsuarioService usuarioService;
 
+    @Autowired
+    DecisorProblemaService decisorProblemaService;
 
     @Autowired
     EmailServiceImp emailServiceImp;
@@ -102,10 +106,14 @@ public class DecisorRest {
                         "</html>"
 
                 ,descisorDTO.getEmail());
+
+                Decisor de = null;
                 if(u!=null)
-                    decisorService.guardar(new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail(),u));
+                    de =new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail(),u);
                 else
-                    decisorService.guardar(new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail()));
+                    de = (new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail()));
+                decisorService.guardar(de);
+                decisorProblemaService.guardar(new DecisorProblema(de,p));
 
         return ResponseEntity.ok(new Mensaje("Inscripción realizada correctamente"));
     }
