@@ -1,4 +1,7 @@
 version: 0.2
+artifacts:
+  files:
+    - '**/*'
 server:
   port: 5000
 cloud:
