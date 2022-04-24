@@ -1,4 +1,4 @@
-version: Desc2
+version: 1.5
 artifacts:
   files:
     - '**/*'
