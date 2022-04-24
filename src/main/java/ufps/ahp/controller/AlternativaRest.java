@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Alternativa;
+import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.services.AlternativaService;
 
 @RequestMapping(value="/alternativa",produces = MediaType.APPLICATION_JSON_VALUE)
@@ -26,6 +27,11 @@ public class AlternativaRest {
     @GetMapping("/{idAlternativa}")
     public ResponseEntity<?> encontrarAlternativa(@PathVariable int idAlternativa){
         return ResponseEntity.ok(alternativaService.buscar(idAlternativa));
+    }
+
+    @GetMapping("/prueba")
+    public ResponseEntity<?> prueba(){
+        return ResponseEntity.ok(new Mensaje("Pipeline works"));
     }
 
 }
