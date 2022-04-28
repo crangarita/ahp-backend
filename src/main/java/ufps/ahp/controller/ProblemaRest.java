@@ -50,10 +50,9 @@ public class ProblemaRest {
     }
 
     @CrossOrigin
-    @GetMapping(path = "/{idProblema}")
-    public ResponseEntity<?> encontrarProblema(@PathVariable String idProblema){
-        log.info(idProblema);
-        return ResponseEntity.ok(problemaService.buscar(idProblema));
+    @GetMapping(path = "/{token}")
+    public ResponseEntity<?> encontrarProblema(@PathVariable String token){
+        return ResponseEntity.ok(problemaService.buscar(token));
     }
 
     @PostMapping
@@ -66,21 +65,23 @@ public class ProblemaRest {
         if(problema == null){
             return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
         }
-        problema.setIdProblema(UUID.randomUUID().toString());
+        problema.setToken(UUID.randomUUID().toString());
+        problema.setEstado(true);
         problema.setFechaCreacion(new Date());
         problemaService.guardar(problema);
         return ResponseEntity.ok(new Mensaje("Problema creado"));
     }
-    @DeleteMapping(path = "/{idProblema}")
-    public ResponseEntity<?> eliminarProblema(@PathVariable String idProblema){
+    @DeleteMapping(path = "/{token}")
+    public ResponseEntity<?> eliminarProblema(@PathVariable String token){
 
-        Problema p = problemaService.buscar(idProblema);
+        Problema p = problemaService.buscar(token);
         if(p == null){
             return new ResponseEntity(new Mensaje("El problema no existe"),HttpStatus.BAD_REQUEST);
         }
-        problemaService.eliminar(p);
+        p.setEstado(false);
+        problemaService.guardar(p);
 
-        return ResponseEntity.ok(new Mensaje("Problema #"+p.getIdProblema()+" eliminado"));
+        return ResponseEntity.ok(new Mensaje("Problema #"+p.getIdProblema()+" deshabilitado"));
     }
 
     @PutMapping
@@ -99,21 +100,20 @@ public class ProblemaRest {
         return ResponseEntity.ok("Problema creado");
     }
 
-    @GetMapping(path ="/criterios/{idProblema}")
-    public ResponseEntity<?> criteriorPorProblema(@PathVariable String idProblema){
-        log.info(idProblema);
-        return ResponseEntity.ok(problemaService.buscar(idProblema).criterioCollection());
+    @GetMapping(path ="/criterios/{token}")
+    public ResponseEntity<?> criteriorPorProblema(@PathVariable String token){
+        return ResponseEntity.ok(problemaService.buscar(token).criterioCollection());
     }
 
-    @GetMapping(path ="/alternativas/{idProblema}")
-    public ResponseEntity<?> alternativaPorProblema(@PathVariable String idProblema){
-        return ResponseEntity.ok(problemaService.buscar(idProblema).alternativaCollection());
+    @GetMapping(path ="/alternativas/{token}")
+    public ResponseEntity<?> alternativaPorProblema(@PathVariable String token){
+        return ResponseEntity.ok(problemaService.buscar(token).alternativaCollection());
     }
 
-    @PostMapping(path="/criterios/{idProblema}")
-    public ResponseEntity<?> agregarCriteriosDeProblema(@PathVariable String idProblema, @RequestBody List<Criterio> criterios){
+    @PostMapping(path="/criterios/{token}")
+    public ResponseEntity<?> agregarCriteriosDeProblema(@PathVariable String token, @RequestBody List<Criterio> criterios){
 
-        Problema p = problemaService.buscar(idProblema);
+        Problema p = problemaService.buscar(token);
         for(Criterio c: criterios){
             c.setProblema(p);
             criterioService.guardar(c);
@@ -121,9 +121,9 @@ public class ProblemaRest {
         return ResponseEntity.ok(criterios);
     }
 
-    @PostMapping(path="/alternativas/{idProblema}")
-    public ResponseEntity<?> agregarAlternativasDeProblema(@PathVariable String idProblema, @RequestBody List<Alternativa> alternativas){
-        Problema p = problemaService.buscar(idProblema);
+    @PostMapping(path="/alternativas/{token}")
+    public ResponseEntity<?> agregarAlternativasDeProblema(@PathVariable String token, @RequestBody List<Alternativa> alternativas){
+        Problema p = problemaService.buscar(token);
         for(Alternativa alt: alternativas){
             alt.setProblema(p);
             alternativaService.guardar(alt);

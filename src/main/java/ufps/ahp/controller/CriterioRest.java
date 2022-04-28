@@ -12,6 +12,8 @@ import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.services.CriterioService;
 
 import javax.validation.Valid;
+import java.util.Date;
+import java.util.UUID;
 
 @RequestMapping(value="/criterio", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -43,7 +45,22 @@ public class CriterioRest {
 
         return ResponseEntity.ok(new Mensaje("Criterio #"+p.getIdCriterio()+" eliminado"));
     }
-    @PutMapping(path = "/{idCriterio}")
+
+    @PostMapping
+    public ResponseEntity<?> guardar(@RequestBody @Valid Criterio criterio, BindingResult br){
+
+        if(br.hasErrors()){
+            return new ResponseEntity<>(br.getAllErrors(),HttpStatus.BAD_REQUEST);
+        }
+
+        if(criterio == null){
+            return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
+        }
+        criterioService.guardar(criterio);
+        return ResponseEntity.ok(new Mensaje("criterio creado"));
+    }
+
+    @PutMapping()
     public ResponseEntity<?> editarCriterio(@RequestBody @Valid Criterio criterio, BindingResult br){
 
         if(br.hasErrors()){

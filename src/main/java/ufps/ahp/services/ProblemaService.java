@@ -1,19 +1,17 @@
 package ufps.ahp.services;
 
-import ufps.ahp.model.Alternativa;
-import ufps.ahp.model.Criterio;
-import ufps.ahp.model.Decisor;
-import ufps.ahp.model.Problema;
+import ufps.ahp.model.*;
 
 import java.util.List;
 
 public interface ProblemaService {
     public List<Problema> listar();
-    public boolean existeDecisor(String email, String idProblema);
-    public Problema buscar(String idProblema);
-    public List<Criterio> criteriosPorProblema(String idProblema);
-    public List<Decisor> decisoresPorProblema(String idProblema);
-    public List<Alternativa> alternativasPorProblema(String idProblema);
+    public boolean existeDecisor(String email, String token);
+    public Problema buscar(String token);
+    public List<Criterio> criteriosPorProblema(String token);
+    public List<Decisor> decisoresPorProblema(String token);
+    public List<Alternativa> alternativasPorProblema(String token);
     public void guardar(Problema p);
     public void eliminar(Problema p);
+
 }

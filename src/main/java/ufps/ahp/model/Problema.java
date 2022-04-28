@@ -12,6 +12,7 @@ import ufps.ahp.security.model.Usuario;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -32,8 +33,10 @@ public class Problema implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_problema")
-    private String idProblema;
+    private int idProblema;
+
     @Lob
     @Column(name = "descripcion")
     private String descripcion;
@@ -53,6 +56,12 @@ public class Problema implements Serializable {
     @OneToMany(mappedBy = "problema")
     private Collection<Alternativa> alternativaCollection;
 
+    @Column(name ="estado")
+    private Boolean estado;
+
+    @Column(name = "token")
+    private String token;
+
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "problema")
     private Collection<DecisorProblema> decisorProblemas;
 
@@ -61,12 +70,20 @@ public class Problema implements Serializable {
     public Problema() {
     }
 
-    public Problema(String idProblema, String descripcion, Date fechaCreacion, Date fechaFinalizacion, Usuario usuario) {
+    public Problema(int idProblema, String descripcion, Date fechaCreacion, Date fechaFinalizacion, Usuario usuario) {
         this.idProblema = idProblema;
         this.descripcion = descripcion;
         this.fechaCreacion = fechaCreacion;
         this.fechaFinalizacion = fechaFinalizacion;
         this.usuario = usuario;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 
     public Collection<DecisorProblema> decisorProblemas() {
@@ -93,16 +110,24 @@ public class Problema implements Serializable {
         this.alternativaCollection = alternativaCollection;
     }
 
-    public Problema(String idProblema) {
+    public Problema(int idProblema) {
         this.idProblema = idProblema;
     }
 
-    public String getIdProblema() {
+    public int getIdProblema() {
         return idProblema;
     }
 
-    public void setIdProblema(String idProblema) {
+    public void setIdProblema(int idProblema) {
         this.idProblema = idProblema;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getDescripcion() {
@@ -138,23 +163,16 @@ public class Problema implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (idProblema != null ? idProblema.hashCode() : 0);
-        return hash;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Problema problema = (Problema) o;
+        return idProblema == problema.idProblema;
     }
 
     @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Problema)) {
-            return false;
-        }
-        Problema other = (Problema) object;
-        if ((this.idProblema == null && other.idProblema != null) || (this.idProblema != null && !this.idProblema.equals(other.idProblema))) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(idProblema);
     }
 
     @Override

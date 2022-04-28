@@ -1,5 +1,6 @@
 package ufps.ahp.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -9,13 +10,12 @@ import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Decisor;
 import ufps.ahp.model.DecisorProblema;
 import ufps.ahp.model.Problema;
+import ufps.ahp.model.PuntuacionAlternativa;
 import ufps.ahp.model.dto.DescisorDTO;
 import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.security.model.Usuario;
 import ufps.ahp.security.servicio.UsuarioService;
-import ufps.ahp.services.DecisorProblemaService;
-import ufps.ahp.services.DecisorService;
-import ufps.ahp.services.ProblemaService;
+import ufps.ahp.services.*;
 import ufps.ahp.services.imp.EmailServiceImp;
 
 import javax.mail.MessagingException;
@@ -24,6 +24,7 @@ import java.util.List;
 @RequestMapping(value= "/decisor",produces = MediaType.APPLICATION_JSON_VALUE)
 //@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
 @CrossOrigin
+@Slf4j
 @RestController
 public class DecisorRest {
 
@@ -39,7 +40,13 @@ public class DecisorRest {
     DecisorProblemaService decisorProblemaService;
 
     @Autowired
+    PuntuacionAlternativaCriterioServicio puntuacionAlternativaCriterioServicio;
+
+    @Autowired
     EmailServiceImp emailServiceImp;
+
+    @Autowired
+    PuntuacionAlternativaServicio puntuacionAlternativaServicio;
 
     @Value("${uribackend}")
     private String urlBackend;
@@ -52,19 +59,40 @@ public class DecisorRest {
         return ResponseEntity.ok(decisorService.listar());
     }
 
-    @GetMapping("/{idProblema}")
-    public ResponseEntity<List<Decisor>> decisoresDeProblema(@PathVariable String idProblema) {
-        return ResponseEntity.ok(problemaService.decisoresPorProblema(idProblema));
+    @GetMapping("/{tokenProblema}")
+    public ResponseEntity<List<Decisor>> decisoresDeProblema(@PathVariable String tokenProblema) {
+        return ResponseEntity.ok(problemaService.decisoresPorProblema(tokenProblema));
+    }
+
+    @GetMapping("/usuario/{email}")
+    public ResponseEntity<List<DecisorProblema>> decisoresDeUsuario(@PathVariable String email) {
+        return ResponseEntity.ok(decisorService.listarDecisoresDeUsuario(email));
+    }
+
+    @GetMapping("/problema/{token}/{email}")
+    public ResponseEntity<?> eliminarDecisorProblema(@PathVariable String token, @PathVariable String email) {
+
+        Decisor d = decisorService.buscarDecisorProblema(token,email);
+        if(d == null){
+            return new ResponseEntity<>(new Mensaje("El decisor no pertenece a este problema"),HttpStatus.NOT_FOUND);
+        }
+
+        for(PuntuacionAlternativa pa: d.getPuntuacionAlternativaCollection()){
+            puntuacionAlternativaServicio.eliminar(pa);
+        }
+
+
+        return ResponseEntity.ok(decisorService.listarDecisoresDeUsuario(token));
     }
 
     @PostMapping
     public ResponseEntity<?> agregarDescisor(@RequestBody DescisorDTO descisorDTO) throws MessagingException {
 
+        Decisor d = decisorService.buscarPorEmail(descisorDTO.getEmail());
         Problema p = problemaService.buscar(descisorDTO.getProblema());
-
         Usuario u = usuarioService.findByEmail(descisorDTO.getEmail());
 
-        if(problemaService.existeDecisor(descisorDTO.getEmail(),p.getIdProblema())){
+        if(problemaService.existeDecisor(descisorDTO.getEmail(),p.getToken())){
             return new ResponseEntity(new Mensaje("El decisor ya se encuentra registrado en este problema"), HttpStatus.BAD_REQUEST);
         }
 
@@ -72,7 +100,7 @@ public class DecisorRest {
             u.setDecisor(new Decisor(descisorDTO.getNombre(), descisorDTO.getEmail()));
         }
 
-        emailServiceImp.enviarEmail("Inscripción descisor problema #"+p.getIdProblema(),
+        emailServiceImp.enviarEmail("Inscripción descisor problema #"+p.getDescripcion(),
 
                 "<!DOCTYPE html>\n" +
                         "<html lang=\"en\">\n" +
@@ -112,8 +140,13 @@ public class DecisorRest {
                     de =new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail(),u);
                 else
                     de = (new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail()));
-                decisorService.guardar(de);
-                decisorProblemaService.guardar(new DecisorProblema(de,p));
+
+                if(d!=null){
+                    decisorProblemaService.guardar(new DecisorProblema(de,p));
+                }else{
+                    decisorService.guardar(de);
+                    decisorProblemaService.guardar(new DecisorProblema(de,p));
+                }
 
         return ResponseEntity.ok(new Mensaje("Inscripción realizada correctamente"));
     }

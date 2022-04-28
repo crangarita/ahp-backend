@@ -2,12 +2,17 @@ package ufps.ahp.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Alternativa;
+import ufps.ahp.model.Criterio;
 import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.services.AlternativaService;
+
+import javax.validation.Valid;
 
 @RequestMapping(value="/alternativa",produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -29,9 +34,29 @@ public class AlternativaRest {
         return ResponseEntity.ok(alternativaService.buscar(idAlternativa));
     }
 
-    @GetMapping("/prueba")
-    public ResponseEntity<?> prueba(){
-        return ResponseEntity.ok(new Mensaje("Pipeline works"));
+    @PutMapping()
+    public ResponseEntity<?> editar(@RequestBody @Valid Alternativa alternativa, BindingResult br){
+
+        if(br.hasErrors()){
+            return new ResponseEntity<>(br.getAllErrors(), HttpStatus.BAD_REQUEST);
+        }
+
+        alternativaService.guardar(alternativa);
+
+        return ResponseEntity.ok(new Mensaje("alternativa editada"));
+    }
+    @PostMapping
+    public ResponseEntity<?> guardar(@RequestBody @Valid Alternativa alternativa, BindingResult br){
+
+        if(br.hasErrors()){
+            return new ResponseEntity<>(br.getAllErrors(),HttpStatus.BAD_REQUEST);
+        }
+
+        if(alternativa == null){
+            return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
+        }
+        alternativaService.guardar(alternativa);
+        return ResponseEntity.ok(new Mensaje("alternativa creado"));
     }
 
 }

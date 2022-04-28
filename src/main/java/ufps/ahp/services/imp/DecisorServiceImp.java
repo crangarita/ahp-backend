@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ufps.ahp.dao.DecisorDAO;
 import ufps.ahp.model.Decisor;
+import ufps.ahp.model.DecisorProblema;
 import ufps.ahp.services.DecisorService;
 
 import java.util.List;
@@ -20,6 +21,16 @@ public class DecisorServiceImp implements DecisorService {
 
     public List<Decisor> listar() {
         return decisorDAO.findAll();
+    }
+
+    @Override
+    public List<DecisorProblema> listarDecisoresDeUsuario(String email) {
+        return decisorDAO.decisoresDeUsuario(email);
+    }
+
+    @Override
+    public Decisor buscarDecisorProblema(String token, String email) {
+        return decisorDAO.buscarDecisorProblema(token,email);
     }
 
     @Override

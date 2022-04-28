@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ufps.ahp.dao.ProblemaDAO;
-import ufps.ahp.model.Alternativa;
-import ufps.ahp.model.Criterio;
-import ufps.ahp.model.Decisor;
-import ufps.ahp.model.Problema;
+import ufps.ahp.model.*;
 import ufps.ahp.services.ProblemaService;
 
 import java.util.List;
@@ -28,32 +25,33 @@ public class ProblemaServiceImp implements ProblemaService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existeDecisor(String email, String idProblema) {
-        return problemaDAO.existeDecisor(email,idProblema)!=null;
+    public boolean existeDecisor(String email, String token) {
+        if(problemaDAO.existeDecisor(email,token)==null)
+            return false;
+        return true;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Problema buscar(String idProblema) {
-        log.info(idProblema);
-        return problemaDAO.getById(idProblema);
+    public Problema buscar(String token) {
+        return problemaDAO.findProblemaByToken(token);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Criterio> criteriosPorProblema(String idProblema) {
-        return problemaDAO.criteriorPorProblema(idProblema);
+    public List<Criterio> criteriosPorProblema(String token) {
+        return problemaDAO.criteriorPorProblema(token);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Decisor> decisoresPorProblema(String idProblema) {
-        return problemaDAO.decisorPorProblema(idProblema);
+    public List<Decisor> decisoresPorProblema(String token) {
+        return problemaDAO.decisorPorProblema(token);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Alternativa> alternativasPorProblema(String idProblema) {
+    public List<Alternativa> alternativasPorProblema(String token) {
         return null;
     }
 

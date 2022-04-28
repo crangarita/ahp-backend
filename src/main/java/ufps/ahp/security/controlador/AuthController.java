@@ -101,6 +101,7 @@ public class AuthController {
         roles.add(rolService.getByRolNombre(Rol.RolNombre.ROLE_ADMIN).get());
 
         usuario.setRoles(roles);
+        usuario.setFecha(new Date());
         usuario.setCelular(nuevoUsuario.getCelular());
         usuario.setEmail(nuevoUsuario.getEmail());
         usuario.setEmpresa(nuevoUsuario.getEmpresa());
