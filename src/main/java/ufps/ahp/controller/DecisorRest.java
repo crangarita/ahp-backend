@@ -77,7 +77,7 @@ public class DecisorRest {
             return new ResponseEntity<>(new Mensaje("El decisor no pertenece a este problema"),HttpStatus.NOT_FOUND);
         }
 
-        for(PuntuacionAlternativa pa: d.getPuntuacionAlternativaCollection()){
+        for(PuntuacionAlternativa pa: d.puntuacionAlternativaCollection()){
             puntuacionAlternativaServicio.eliminar(pa);
         }
 

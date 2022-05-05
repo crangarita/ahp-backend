@@ -117,8 +117,7 @@ public class Decisor implements Serializable {
         this.usuario = usuario;
     }
 
-    @XmlTransient
-    public Collection<Puntuacion> getPuntuacionCollection() {
+    public Collection<Puntuacion> puntuacionCollection() {
         return puntuacionCollection;
     }
 
@@ -126,8 +125,7 @@ public class Decisor implements Serializable {
         this.puntuacionCollection = puntuacionCollection;
     }
 
-    @XmlTransient
-    public Collection<PuntuacionAlternativa> getPuntuacionAlternativaCollection() {
+    public Collection<PuntuacionAlternativa> puntuacionAlternativaCollection() {
         return puntuacionAlternativaCollection;
     }
 

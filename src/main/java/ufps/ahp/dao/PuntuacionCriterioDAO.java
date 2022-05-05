@@ -17,13 +17,13 @@ public interface PuntuacionCriterioDAO extends JpaRepository<PuntuacionCriterio,
                             "into puntuacion_criterio (criterio1_id, criterio2_id, problema) " +
                             "SELECT c1.id_criterio, c2.id_criterio, c1.problema " +
                             "from criterio c1, criterio c2 " +
-                            "where c1.problema = c2.problema and c1.id_criterio<=c2.id_criterio" ,
+                            "where c1.problema = c2.problema and c1.id_criterio<=c2.id_criterio and c1.problema =:idProblema and c2.problema=:idProblema" ,
             nativeQuery = true)
-    void llenarPuntuacionCriterio();
+    void llenarPuntuacionCriterio(@Param("idProblema") int idProblema);
 
     @Transactional
     @Modifying
-    @Query(value ="select pc from PuntuacionCriterio pc where pc.problema.idProblema=:id and pc.criterio1Id<>pc.criterio2Id"
+    @Query(value ="select pc from PuntuacionCriterio pc where pc.problema.token=:id and pc.criterio1Id<>pc.criterio2Id"
             )
     List<PuntuacionCriterio> obtenerPares(@Param("id") String id );
 }

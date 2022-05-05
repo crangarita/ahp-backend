@@ -20,8 +20,8 @@ public class PuntuacionCriterioServicioImp implements PuntuacionCriterioServicio
     }
 
     @Override
-    public void agregarCriteriosPuntuacion() {
-        puntuacionCriterioDAO.llenarPuntuacionCriterio();
+    public void agregarCriteriosPuntuacion(int idProblema) {
+        puntuacionCriterioDAO.llenarPuntuacionCriterio(idProblema);
     }
 
     @Override

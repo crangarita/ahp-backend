@@ -10,4 +10,5 @@ public interface PuntuacionServicio {
     public Puntuacion buscar(int idPuntuacion);
     public void guardar(Puntuacion ct);
     public void eliminar(Puntuacion a);
+    public List<Object> vectorPropio(String tokenProblema);
 }

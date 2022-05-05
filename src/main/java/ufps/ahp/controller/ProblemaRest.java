@@ -18,6 +18,7 @@ import ufps.ahp.security.servicio.UsuarioService;
 import ufps.ahp.services.AlternativaService;
 import ufps.ahp.services.CriterioService;
 import ufps.ahp.services.ProblemaService;
+import ufps.ahp.services.PuntuacionCriterioServicio;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -43,6 +44,9 @@ public class ProblemaRest {
 
     @Autowired
     UsuarioService usuarioService;
+
+    @Autowired
+    PuntuacionCriterioServicio puntuacionCriterioServicio;
 
     @GetMapping
     public ResponseEntity<?> listar(){
@@ -71,6 +75,29 @@ public class ProblemaRest {
         problemaService.guardar(problema);
         return ResponseEntity.ok(new Mensaje("Problema creado"));
     }
+
+    @PostMapping(path="/criterios/{token}")
+    public ResponseEntity<?> agregarCriteriosDeProblema(@PathVariable String token, @RequestBody List<Criterio> criterios){
+
+        Problema p = problemaService.buscar(token);
+        for(Criterio c: criterios){
+            c.setProblema(p);
+            criterioService.guardar(c);
+        }
+        puntuacionCriterioServicio.agregarCriteriosPuntuacion(p.getIdProblema());
+        return ResponseEntity.ok(criterios);
+    }
+
+    @PostMapping(path="/alternativas/{token}")
+    public ResponseEntity<?> agregarAlternativasDeProblema(@PathVariable String token, @RequestBody List<Alternativa> alternativas){
+        Problema p = problemaService.buscar(token);
+        for(Alternativa alt: alternativas){
+            alt.setProblema(p);
+            alternativaService.guardar(alt);
+        }
+        return ResponseEntity.ok(alternativas);
+    }
+
     @DeleteMapping(path = "/{token}")
     public ResponseEntity<?> eliminarProblema(@PathVariable String token){
 
@@ -110,24 +137,11 @@ public class ProblemaRest {
         return ResponseEntity.ok(problemaService.buscar(token).alternativaCollection());
     }
 
-    @PostMapping(path="/criterios/{token}")
-    public ResponseEntity<?> agregarCriteriosDeProblema(@PathVariable String token, @RequestBody List<Criterio> criterios){
 
-        Problema p = problemaService.buscar(token);
-        for(Criterio c: criterios){
-            c.setProblema(p);
-            criterioService.guardar(c);
-        }
-        return ResponseEntity.ok(criterios);
-    }
+    @GetMapping(path="/criteriosComparados/{idProblema}") // Metodo para obtener los pares a comparar en la puntuacion de criterios
+    public ResponseEntity<?> obtenerParesCriterios(@PathVariable String idProblema){
+        Problema p = problemaService.buscar(idProblema);
 
-    @PostMapping(path="/alternativas/{token}")
-    public ResponseEntity<?> agregarAlternativasDeProblema(@PathVariable String token, @RequestBody List<Alternativa> alternativas){
-        Problema p = problemaService.buscar(token);
-        for(Alternativa alt: alternativas){
-            alt.setProblema(p);
-            alternativaService.guardar(alt);
-        }
-        return ResponseEntity.ok(alternativas);
+        return ResponseEntity.ok(puntuacionCriterioServicio.obtenerParesCriterios(idProblema));
     }
 }

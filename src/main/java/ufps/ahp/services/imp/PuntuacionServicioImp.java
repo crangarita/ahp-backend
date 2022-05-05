@@ -33,4 +33,10 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
     public void eliminar(Puntuacion a) {
         puntuacionDAO.delete(a);
     }
+
+    @Override
+    public List<Object> vectorPropio(String tokenProblema) {
+
+        return null;
+    }
 }

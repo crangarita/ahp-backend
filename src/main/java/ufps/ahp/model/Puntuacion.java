@@ -85,7 +85,7 @@ public class Puntuacion implements Serializable {
         this.decisor = decisor;
     }
 
-    public PuntuacionCriterio getPuntuacionCriterio() {
+    public PuntuacionCriterio puntuacionCriterio() {
         return puntuacionCriterio;
     }
 
