@@ -1,17 +1,24 @@
 package ufps.ahp.negocio;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ufps.ahp.dao.PuntuacionDAO;
+import ufps.ahp.services.PuntuacionServicio;
+
 import java.util.*;
 
+@Component
 public class PlayGround {
 
 //    Calculo de peso de prioridades ====================================
-    public static List<Object> calculoDePesos(float[][]matrizA){
+    public  List<Object> calculoDePesos(float[][]matrizA){
         int x = matrizA.length;
         List<Object> procesoYMatriz = new ArrayList<>();
 
         List<Object> resultados = multiplicarMatrices(matrizA,matrizA);
-        String proceso = "Matriz A: "+mostrarMatriz(matrizA);
-        proceso+="\n"+"=================================================";
+        String proceso = "=============== CALCULO DE PESOS ===============" +
+                "\nMatriz A: "+mostrarMatriz(matrizA);
+        proceso+="\n"+"";
 
         float[][]matrizMultiplicada = (float[][])resultados.get(1) ;
 
@@ -31,7 +38,7 @@ public class PlayGround {
             proceso+="\n"+mostrarVector(vectorPropio);
             vectoresPropios.add(vectorPropio);
 
-            if(i>0 || i>50){
+            if(i>0){
                 float[]anterior = vectoresPropios.get(i-1);
                 if(Arrays.equals(vectorPropio, anterior)){
                     proceso+="\n"+"**************************************";
@@ -49,7 +56,7 @@ public class PlayGround {
 
         return  procesoYMatriz;
     }
-    public static float[] calcularVectorPropio(float[]vector, float total){
+    public  float[] calcularVectorPropio(float[]vector, float total){
 
         for (int i = 0; i < vector.length; i++) {
             vector[i] /=total;
@@ -57,7 +64,7 @@ public class PlayGround {
         }
         return vector;
     }
-    public static List<Object> calcularVectorNormal(float[][]matriz){
+    public  List<Object> calcularVectorNormal(float[][]matriz){
         List<Object> totalYVector = new ArrayList<>();
 
         int x = matriz.length;
@@ -81,7 +88,7 @@ public class PlayGround {
 
     return totalYVector;
     }
-    public static List<Object> multiplicarMatrices(float[][]matrizA, float[][]matrizB){
+    public  List<Object> multiplicarMatrices(float[][]matrizA, float[][]matrizB){
         List<Object> procesoYMatriz = new ArrayList<>();
         int x = matrizA.length;
         int y = matrizB.length;
@@ -119,21 +126,20 @@ public class PlayGround {
 
         return procesoYMatriz;
     }
-    public static List<Object> multiplicarMatrizXVector(float[][]matrizA, float[]matrizB){
+    public  List<Object> multiplicarMatrizXVector(float[][]matrizA, float[]matrizB){
         List<Object> procesoYMatriz = new ArrayList<>();
         int x = matrizA.length;
         int y = matrizB.length;
 
         String proceso ="";
 
-        float[][] axb = new float[x][y];
+        float[] axb = new float[x];
         float total=0f;
 
         for (int i=0; i < x ; i++) {
-            for (int k = 0, contador=0;k<y; k++, contador++) {
-                if(k%y==0){
+            for (int k = 0, contador=0;k<y&&contador<y*y; k++, contador++) {
 
-                    axb[i][k]=total;
+                if((k%y==0)){
                     k=0;
                     total=0;
                 }
@@ -142,7 +148,9 @@ public class PlayGround {
                 float valor2 = matrizB[k];
                 total+=valor1*valor2;
                 proceso += valor1+" * "+valor2+" = "+valor1*valor2+"\n";
-
+                if(k+1 == y){
+                    axb[i]=total;
+                }
 
             }
         }
@@ -152,7 +160,7 @@ public class PlayGround {
 
         return procesoYMatriz;
     }
-    public static String mostrarMatriz(float[][]matriz){
+    public  String mostrarMatriz(float[][]matriz){
         String resultado = "";
         for (int i = 0; i < matriz.length; i++) {
             resultado+="\n";
@@ -162,14 +170,14 @@ public class PlayGround {
         }
         return resultado;
     }
-    public static String mostrarVector(float[]vector){
+    public  String mostrarVector(float[]vector){
         String resultado = "";
         for (int i = 0; i < vector.length; i++) {
                 resultado+=("["+vector[i]+"] "+"\n");
         }
         return resultado;
     }
-    public static double redondearDecimales(double valorInicial, int numeroDecimales) {
+    public  double redondearDecimales(double valorInicial, int numeroDecimales) {
         double parteEntera, resultado;
         resultado = valorInicial;
         parteEntera = Math.floor(resultado);
@@ -180,22 +188,54 @@ public class PlayGround {
     }
 
 //    Calculo de consistencia ====================================
-    public static List<Object> calculoDeConsistencia(float[][]matrizA){
+    public  List<Object> calculoDeConsistencia(float[][]matrizA){
         int x = matrizA.length;
-        List<Object> procesoYMatriz = new ArrayList<>();
-        String proceso = "Matriz A: \n"+mostrarMatriz(matrizA);
 
-        proceso+="\n\nNormalización de matriz:\n"+mostrarMatriz(normalizacionMatriz(matrizA));
+        List<Object> procesoYConsistencia = new ArrayList<>();
+        String proceso = "============== CALCULO DE CONSISTENCIA============== " +
+                "\nMatriz A: \n"+mostrarMatriz(matrizA);
 
-//        proceso+="\n Vector suma filas:\n"+mostrarVector();
+        float[][]matrizNormalizada = normalizacionMatriz(matrizA);
+        proceso+="\n\nNormalización de matriz:\n"+mostrarMatriz(matrizNormalizada);
+        List<float[]>vectorSumapromedio = calculoVectorSumaPromedio(matrizNormalizada);
 
-        procesoYMatriz.add(proceso);
-        return  procesoYMatriz;
+        float []vectorSumaFilas = vectorSumapromedio.get(0);
+        float []vectorPromedio = vectorSumapromedio.get(1);
+
+        float []vectorFilaTotal = (float[]) multiplicarMatrizXVector(matrizA,vectorPromedio).get(1);
+        float []vectorCociente = calcularVectorCociente(vectorFilaTotal,vectorPromedio);
+        float promedio = calcularPromedio(vectorCociente);
+        float ci = (promedio-x)/2;
+        float ica = (1.98f *(x-2))/x; // indice de consistencia aleatoria x=cantidad de criterios
+        float radioConsistencia = ci/ica;
+
+        proceso+="\n\n Vector Suma filas: \n"+mostrarVector(vectorSumaFilas);
+        proceso+="\n\n Vector Promedio: \n"+mostrarVector(vectorPromedio);
+        proceso+="\n\n Vector Fila total: \n"+mostrarVector(vectorFilaTotal);
+        proceso+="\n\n Vector cociente:\n\n"+mostrarVector(vectorCociente);
+        proceso+="\n\n λ Max:"+promedio;
+        proceso+="\n\n INDICE DE CONSISTENCIA: ["+ci+"]";
+        proceso+="\n\n RADIO DE CONSISTENCIA: ["+radioConsistencia+"]" ;
+        if(radioConsistencia<=0.10f)
+            proceso+="\n\n ✔✔✔ CONSISTENCIA RAZONABLE ✔✔✔";
+        if(radioConsistencia>0.10f)
+            proceso+="\n\nXXXX PRESENTA INCONSISTENCIA XXXX";
+        proceso+="\n\n =================================================";
+
+        procesoYConsistencia.add(proceso);
+        procesoYConsistencia.add(radioConsistencia);
+        return  procesoYConsistencia;
     }
-
-    public static float[][]normalizacionMatriz(float[][]matriz){
+    public  float[][]normalizacionMatriz(float[][]matriz){
         int x = matriz.length;
         float[]sumas = new float[x];
+        float[][]matrizNormalizada=new float[x][x];
+
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < x; j++) {
+                matrizNormalizada[i][j]=matriz[i][j];
+            }
+        }
 
         for (int i = 0; i < x; i++) {
             float sumaVector = 0;
@@ -206,12 +246,12 @@ public class PlayGround {
         }
         for (int i = 0; i < x; i++) {
             for (int j = 0; j < x; j++) {
-                matriz[j][i] /=sumas[i];
+                matrizNormalizada[j][i] /=sumas[i];
             }
         }
-        return matriz;
+        return matrizNormalizada;
     }
-    public static List<float[]> calculoVectorSumaPromedio(float[][]matriz){
+    public  List<float[]> calculoVectorSumaPromedio(float[][]matriz){
         int x = matriz.length;
         List<float[]> vectorSumaPromedio = new ArrayList<>();
 
@@ -233,89 +273,109 @@ public class PlayGround {
 
         return vectorSumaPromedio;
     }
-
-    public static void main(String[] args) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR,1);
-        Date manana = calendar.getTime();
-//        System.out.println(manana);
-//        System.out.println(manana.before(new Date()));
-        int x = 3;
-        int y = 3;
-        float[][] matrizA = new float[x][y];
-
-        matrizA[0][0]= 1;
-        matrizA[0][1]= 4;
-        matrizA[0][2]= 5;
-
-        matrizA[1][0]= 0.25f;
-        matrizA[1][1]= 1;
-        matrizA[1][2]= 2;
-
-        matrizA[2][0]= 0.2f;
-        matrizA[2][1]= 0.5f;
-        matrizA[2][2]= 1;
-//        matrizA[0][0]= 1;
-//        matrizA[0][1]= 1/4f;
-//        matrizA[0][2]= 4;
-//
-//        matrizA[1][0]= 4;
-//        matrizA[1][1]= 1;
-//        matrizA[1][2]= 9;
-//
-//        matrizA[2][0]= 1/4f;
-//        matrizA[2][1]= 1/9f;
-//        matrizA[2][2]= 1;
-
-//        matrizA[0][0]= 1;
-//        matrizA[0][1]= 4;
-//        matrizA[0][2]= 5;
-//        matrizA[1][0]= 0.25f;
-//        matrizA[1][1]= 1;
-//        matrizA[1][2]= 2;
-//        matrizA[2][0]= 0.20f;
-//        matrizA[2][1]= 0.50f;
-//        matrizA[2][2]= 1;
-
-
-//        float[][] matrizB = new float[x][y];
-//
-//        matrizB[0][0]= 5;
-//        matrizB[0][1]= 8;
-//        matrizB[0][2]= 3;
-//
-//        matrizB[1][0]= 6;
-//        matrizB[1][1]= 4;
-//        matrizB[1][2]= 0;
-//
-//        matrizB[2][0]= 1;
-//        matrizB[2][1]= 0;
-//        matrizB[2][2]= 2;
-
-        List<Object> resultados = calculoDePesos(matrizA);
-
-        float []vectorPropio = (float[]) resultados.get(0);
-        String proceso = (String) resultados.get(1);
-
-//        System.out.println("Calculo de pesos:\n VECTOR PROPIO:\n" +mostrarVector(vectorPropio));
-//        System.out.println("Proceso:\n"+proceso);
-//
-//        System.out.println(mostrarMatriz(matrizA));
-//        System.out.println(mostrarVector(calculoVectorSumaPromedio(normalizacionMatriz(matrizA)).get(0)));
-//        System.out.println(mostrarVector(calculoVectorSumaPromedio(normalizacionMatriz(matrizA)).get(1)));
-
-        float[] matrizB = new float[x];
-
-        matrizB[0]= 0.6806426f;
-        matrizB[1]= 0.20141065f;
-        matrizB[2]= 0.11794671f;
-        System.out.println(mostrarMatriz(matrizA));
-        System.out.println("=========================");
-
-        System.out.println(mostrarVector(matrizB));
-        System.out.println("=========================");
-        System.out.println(mostrarMatriz((float[][])multiplicarMatrizXVector(matrizA,matrizB).get(1)));
-
-
+    public  float[]calcularVectorCociente(float[]vectorSumaFilas, float[]vectorPromedio){
+        float[]vectorCociente = new float[vectorPromedio.length];
+        for (int i = 0; i < vectorPromedio.length; i++) {
+            float v1=vectorSumaFilas[i];
+            float v2=vectorPromedio[i];
+            vectorCociente[i]=(float)(v1)/(v2);
+        }
+        return vectorCociente;
     }
+    private  float calcularPromedio(float[] vector) {
+        float total=0;
+
+        for (int i = 0; i < vector.length; i++) {
+            total+=vector[i];
+        }
+        return total/vector.length;
+    }
+
+    private  String agregarEspacios(int total){
+        String totalEspacios = "";
+
+        for (int i = 0; i < total; i++) {
+            totalEspacios+=" ";
+        }
+        return totalEspacios;
+    }
+
+//    public  void main(String[] args) {
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.DAY_OF_YEAR,1);
+//        Date manana = calendar.getTime();
+////        System.out.println(manana);
+////        System.out.println(manana.before(new Date()));
+////        int x = 3;
+//////        int y = 3;
+//////        float[][] matrizA = new float[x][y];
+//////
+//////        matrizA[0][0]= 1;
+//////        matrizA[0][1]= 4;
+//////        matrizA[0][2]= 5;
+//////
+//////        matrizA[1][0]= 0.25f;
+//////        matrizA[1][1]= 1;
+//////        matrizA[1][2]= 2;
+//////
+//////        matrizA[2][0]= 0.2f;
+//////        matrizA[2][1]= 0.5f;
+//////        matrizA[2][2]= 1;
+//////
+//////        List<Object> resultados = calculoDeConsistencia(matrizA);
+//////
+//////        System.out.println(resultados.get(0));
+//////
+//////        List<Object> resultados2 = calculoDePesos(matrizA);
+//////
+//////        System.out.println(resultados2.get(1));
+//
+//        int totalCriterios =6;
+//
+//        Object[][] matrizPareada = new Object[totalCriterios+1][totalCriterios+1];
+//
+//        for (int i = 0; i < matrizPareada.length; i++) {
+//
+//            if(i==0){
+//                matrizPareada[0][0] = "";
+//            }else{
+//
+//                matrizPareada[0][i] = agregarEspacios(8)+"C"+i;
+//                matrizPareada[i][0] = "C"+i;
+//            }
+//
+//        }
+//
+//        for (int i = 1; i < totalCriterios+1; i++) {
+//            for (int j = 1; j < totalCriterios+1; j++) {
+//                if(i == j){
+//                    matrizPareada[i][j] = 1;
+//                }else{
+//                    if(j>i){
+//                        System.out.println(matrizPareada[0][j]+"----"+matrizPareada[i][0]);
+//                        matrizPareada[i][j]="X";
+//
+//                    }else{
+//                        matrizPareada[i][j]="#";
+//
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//
+//        for (int i = 0; i < totalCriterios+1; i++) {
+//            System.out.println("");
+//            for (int j = 0; j < totalCriterios+1; j++) {
+//                System.out.print(matrizPareada[i][j].toString()+" ");
+//            }
+//        }
+//
+//
+//        System.out.println();
+//
+//
+//
+//    }
 }

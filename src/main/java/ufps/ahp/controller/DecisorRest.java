@@ -100,7 +100,7 @@ public class DecisorRest {
             u.setDecisor(new Decisor(descisorDTO.getNombre(), descisorDTO.getEmail()));
         }
 
-        emailServiceImp.enviarEmail("Inscripción descisor problema #"+p.getDescripcion(),
+        emailServiceImp.enviarEmail("Inscripción descisor problema "+p.getDescripcion(),
 
                 "<!DOCTYPE html>\n" +
                         "<html lang=\"en\">\n" +

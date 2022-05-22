@@ -10,6 +10,7 @@ import ufps.ahp.model.Criterio;
 import ufps.ahp.model.Problema;
 import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.services.CriterioService;
+import ufps.ahp.services.ProblemaService;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -23,6 +24,9 @@ import java.util.UUID;
 public class CriterioRest {
     @Autowired
     CriterioService criterioService;
+
+    @Autowired
+    ProblemaService problemaService;
 
     @GetMapping
     public ResponseEntity<?> listar(){
@@ -56,6 +60,8 @@ public class CriterioRest {
         if(criterio == null){
             return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
         }
+
+        criterio.setProblema(problemaService.buscar(criterio.problema().getToken()));
         criterioService.guardar(criterio);
         return ResponseEntity.ok(new Mensaje("criterio creado"));
     }

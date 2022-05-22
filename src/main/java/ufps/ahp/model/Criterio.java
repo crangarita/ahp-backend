@@ -113,7 +113,7 @@ public class Criterio implements Serializable {
 
     @Override
     public String toString() {
-        return "com.example.demo.rest.Criterio[ idCriterio=" + idCriterio + " ]";
+        return this.getDescripcion();
     }
 
 }

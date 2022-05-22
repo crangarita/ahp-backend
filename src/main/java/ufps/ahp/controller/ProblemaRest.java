@@ -73,7 +73,7 @@ public class ProblemaRest {
         problema.setEstado(true);
         problema.setFechaCreacion(new Date());
         problemaService.guardar(problema);
-        return ResponseEntity.ok(new Mensaje("Problema creado"));
+        return ResponseEntity.ok(problema);
     }
 
     @PostMapping(path="/criterios/{token}")
@@ -106,6 +106,19 @@ public class ProblemaRest {
             return new ResponseEntity(new Mensaje("El problema no existe"),HttpStatus.BAD_REQUEST);
         }
         p.setEstado(false);
+        problemaService.guardar(p);
+
+        return ResponseEntity.ok(new Mensaje("Problema #"+p.getIdProblema()+" deshabilitado"));
+    }
+
+    @GetMapping(path = "/{token}/activar")
+    public ResponseEntity<?> activarProblema(@PathVariable String token){
+
+        Problema p = problemaService.buscar(token);
+        if(p == null){
+            return new ResponseEntity(new Mensaje("El problema no existe"),HttpStatus.BAD_REQUEST);
+        }
+        p.setEstado(true);
         problemaService.guardar(p);
 
         return ResponseEntity.ok(new Mensaje("Problema #"+p.getIdProblema()+" deshabilitado"));

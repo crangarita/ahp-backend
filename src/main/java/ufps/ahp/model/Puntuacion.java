@@ -41,7 +41,7 @@ public class Puntuacion implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "valor")
-    private int valor;
+    private float valor;
     @JoinColumn(name = "decisor", referencedColumnName = "id_decisor")
     @ManyToOne(optional = false)
     private Decisor decisor;
@@ -69,7 +69,7 @@ public class Puntuacion implements Serializable {
         this.idPuntuacion = idPuntuacion;
     }
 
-    public int getValor() {
+    public float getValor() {
         return valor;
     }
 
@@ -77,7 +77,7 @@ public class Puntuacion implements Serializable {
         this.valor = valor;
     }
 
-    public Decisor getDecisor() {
+    public Decisor decisor() {
         return decisor;
     }
 
@@ -85,7 +85,7 @@ public class Puntuacion implements Serializable {
         this.decisor = decisor;
     }
 
-    public PuntuacionCriterio puntuacionCriterio() {
+    public PuntuacionCriterio getPuntuacionCriterio() {
         return puntuacionCriterio;
     }
 

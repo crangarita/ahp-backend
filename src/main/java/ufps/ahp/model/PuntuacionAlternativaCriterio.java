@@ -56,7 +56,7 @@ public class PuntuacionAlternativaCriterio implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "valor")
-    private int valor;
+    private float valor;
     @JoinColumn(name = "problema", referencedColumnName = "id_problema")
     @ManyToOne(optional = false)
     private Problema problema;
@@ -101,7 +101,7 @@ public class PuntuacionAlternativaCriterio implements Serializable {
         this.alternativa2 = alternativa2;
     }
 
-    public int getValor() {
+    public float getValor() {
         return valor;
     }
 

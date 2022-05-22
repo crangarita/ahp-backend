@@ -9,8 +9,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ufps.ahp.model.Alternativa;
 import ufps.ahp.model.Criterio;
+import ufps.ahp.model.Problema;
 import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.services.AlternativaService;
+import ufps.ahp.services.ProblemaService;
 
 import javax.validation.Valid;
 
@@ -23,6 +25,9 @@ public class AlternativaRest {
 
     @Autowired
     AlternativaService alternativaService;
+
+    @Autowired
+    ProblemaService problemaService;
 
     @GetMapping
     public ResponseEntity<?> listar(){
@@ -42,9 +47,9 @@ public class AlternativaRest {
         }
 
         alternativaService.guardar(alternativa);
-
         return ResponseEntity.ok(new Mensaje("alternativa editada"));
     }
+
     @PostMapping
     public ResponseEntity<?> guardar(@RequestBody @Valid Alternativa alternativa, BindingResult br){
 
@@ -55,7 +60,12 @@ public class AlternativaRest {
         if(alternativa == null){
             return new ResponseEntity(new Mensaje("Datos incorrectos"),HttpStatus.BAD_REQUEST);
         }
+
+
+        Problema problema = problemaService.buscar(alternativa.getProblema().getToken());
+        alternativa.setProblema(problema);
         alternativaService.guardar(alternativa);
+
         return ResponseEntity.ok(new Mensaje("alternativa creado"));
     }
 

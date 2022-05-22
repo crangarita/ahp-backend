@@ -57,7 +57,7 @@ public class PuntuacionCriterio implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "valor")
-    private int valor;
+    private float valor;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "puntuacionCriterio")
     private Collection<Puntuacion> puntuacionCollection;
     @JoinColumn(name = "problema", referencedColumnName = "id_problema")
@@ -103,7 +103,7 @@ public class PuntuacionCriterio implements Serializable {
         this.criterio2Id = criterio2Id;
     }
 
-    public int getValor() {
+    public float getValor() {
         return valor;
     }
 
@@ -112,7 +112,7 @@ public class PuntuacionCriterio implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Puntuacion> getPuntuacionCollection() {
+    public Collection<Puntuacion> puntuacionCollection() {
         return puntuacionCollection;
     }
 
