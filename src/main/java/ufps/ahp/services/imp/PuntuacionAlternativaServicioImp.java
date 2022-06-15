@@ -266,7 +266,7 @@ public class PuntuacionAlternativaServicioImp implements PuntuacionAlternativaSe
             Alternativa alternativa2 = puntuaciones.get(i).getPuntuacionAlternativaCriterio().getAlternativa2();
             if(alternativa1.getIdAlternativa()==c1.getIdAlternativa() && alternativa2.getIdAlternativa()== c2.getIdAlternativa()
                     ||
-                    alternativa1.getIdAlternativa()==c2.getIdAlternativa() && alternativa1.getIdAlternativa() == c1.getIdAlternativa()
+                    alternativa1.getIdAlternativa()==c2.getIdAlternativa() && alternativa2.getIdAlternativa() == c1.getIdAlternativa()
             ){
                 return puntuaciones.get(i);
             }

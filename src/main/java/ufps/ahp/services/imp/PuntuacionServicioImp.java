@@ -68,6 +68,11 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
         List<Object> resultados = new ArrayList<>();
 
         List<Puntuacion> puntuacionesDeProblema = puntuacionDAO.puntuacionesDeUsuario(emailDecisor,token);
+
+        for(Puntuacion ps: puntuacionesDeProblema){
+            log.info(ps.getIdPuntuacion()+" -----");
+        }
+        log.info("===");
         if (puntuacionesDeProblema.size()==0){
             return null;
         }
@@ -99,6 +104,7 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
                     if(j>i){
                         Criterio criterio1 = (Criterio) matrizPareada[i][0];
                         Criterio criterio2 = (Criterio) matrizPareada[0][j];
+                        log.info("C1:"+criterio1.getDescripcion()+" C2:"+criterio2.getDescripcion());
                         Puntuacion puntuacion = buscarPuntuacion(puntuacionesDeProblema, criterio1,criterio2);
 
                         matrizPareada[i][j]=puntuacion.getValor();
@@ -279,15 +285,16 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
         for (int i = 0; i < puntuaciones.size(); i++) {
             Criterio criterio1 = puntuaciones.get(i).getPuntuacionCriterio().getCriterio1Id();
             Criterio criterio2 = puntuaciones.get(i).getPuntuacionCriterio().getCriterio2Id();
-
+            log.info("C1Busca:"+c1.getIdCriterio()+", C2Busca:"+c2.getIdCriterio()+" , C1I:"+criterio1.getIdCriterio()+", C2I:"+criterio2.getIdCriterio());
             if(criterio1.getIdCriterio()==c1.getIdCriterio() && criterio2.getIdCriterio() == c2.getIdCriterio()
                     ||
-               criterio1.getIdCriterio()==c2.getIdCriterio() && criterio1.getIdCriterio() == c1.getIdCriterio()
+               criterio1.getIdCriterio()==c2.getIdCriterio() && criterio2.getIdCriterio() == c1.getIdCriterio()
             ){
                 return puntuaciones.get(i);
             }
 
         }
+        log.info("NULLLLL");
     return null;
     }
 }
