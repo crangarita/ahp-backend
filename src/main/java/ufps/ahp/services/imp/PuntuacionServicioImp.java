@@ -3,9 +3,11 @@ package ufps.ahp.services.imp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ufps.ahp.dao.PuntuacionDAO;
 import ufps.ahp.model.*;
 import ufps.ahp.negocio.PlayGround;
+import ufps.ahp.services.DecisorService;
 import ufps.ahp.services.PuntuacionServicio;
 
 import java.util.ArrayList;
@@ -20,38 +22,55 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
     @Autowired
     PlayGround playGround;
 
+    @Autowired
+    DecisorService decisorService;
+
 
     @Override
+    @Transactional(readOnly = true)
     public List<Puntuacion> listar() {
         return puntuacionDAO.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Puntuacion> puntuacionDecisor(String emailDecisor, String token) {
         return puntuacionDAO.puntuacionesDeUsuario(emailDecisor,token);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Puntuacion buscar(int idPuntuacion) {
         return puntuacionDAO.findById(idPuntuacion).orElse(null);
     }
 
     @Override
+    public Puntuacion buscarPuntuacionDecisorProblema(int idPuntuacionCriterio, String email) {
+        return puntuacionDAO.puntuacionUsuario(email,idPuntuacionCriterio);
+    }
+
+    @Override
+    @Transactional
     public void guardar(Puntuacion ct) {
         puntuacionDAO.save(ct);
     }
 
     @Override
+    @Transactional
     public void eliminar(Puntuacion a) {
         puntuacionDAO.delete(a);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Object> calcularMatriz(String emailDecisor, String token, Problema p) {
 
         List<Object> resultados = new ArrayList<>();
 
         List<Puntuacion> puntuacionesDeProblema = puntuacionDAO.puntuacionesDeUsuario(emailDecisor,token);
+        if (puntuacionesDeProblema.size()==0){
+            return null;
+        }
         List<Criterio> criterios = (List<Criterio>) p.criterioCollection();
 
         int totalCriterios =p.criterioCollection().size()+1;
@@ -105,21 +124,43 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
         float[]prioridades = (float[]) resultados2.get(0);
 
         Object[][]prioridadesCompletas = new Object[prioridades.length][2];
-
         for (int i = 0; i < prioridades.length; i++) {
             prioridadesCompletas[i][0]= matrizPareada[i+1][0];
             prioridadesCompletas[i][1]=prioridades[i];
         }
+
+        float mayor = prioridades[0];
+        Criterio ganador = null;
+        ganador = (Criterio) matrizPareada[1][0];
+
+        for (int i = 0; i < prioridades.length; i++) {
+            if(mayor<prioridades[i]){
+                mayor = prioridades[i];
+                ganador= (Criterio) matrizPareada[i+1][0];
+            }
+        }
+
+
+
         resultados.add(matrizPareada);
         resultados.add(matrizPareadaDefault);
         resultados.add(prioridadesCompletas);
         resultados.add(resultados2.get(1));
+        resultados.add(ganador);
+        resultados.add(decisorService.buscarPorEmail(emailDecisor));
 
         return resultados;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Object> totalizarMatriz(String token, Problema p) {
+
+        List<Puntuacion> puntuacionesProblema = puntuacionDAO.puntuacionesDeProblema(p.getToken());
+        if(puntuacionesProblema.size()==0){
+            return null;
+        }
+
         List<DecisorProblema> decisores =(List<DecisorProblema>)(p.decisorProblemas());
 
         List<Object> resultados = new ArrayList<>();
@@ -141,41 +182,51 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
             }
 
         }
+        List<Object> estadisticasDecisor = new ArrayList<>();
 
         // Recorro por cada decisor las puntuaciones realizadas para totalizar en una sola matriz pareada
         for(int x = 0; x < decisores.size(); x++) {
-
             Decisor decisor = decisores.get(x).getDecisor();
-
             List<Puntuacion> puntuacionesDeProblema = puntuacionDAO.puntuacionesDeUsuario(decisor.getEmail(),token);
-            for (int i = 1; i < totalCriterios; i++) {
-                for (int j = 1; j < totalCriterios; j++) {
-                    if(i == j){
-                        matrizPareada[i][j] = 1;
-                        matrizPareadaDefault[i-1][j-1]=1;
-                    }else{
-                        if(j>i){
-                            Criterio criterio1 = (Criterio) matrizPareada[i][0];
-                            Criterio criterio2 = (Criterio) matrizPareada[0][j];
-                            Puntuacion puntuacion = buscarPuntuacion(puntuacionesDeProblema, criterio1,criterio2);
+            if (puntuacionesDeProblema.size() > 0) {
+                estadisticasDecisor.add(this.calcularMatriz(decisor.getEmail(), p.getToken(), p)); // pos [2] // pos [5] info decisor
+//            [
+//            {
+//                "idCriterio": 110,
+//                    "descripcion": "Comunidad"
+//            },
+//            0.368
+//],
+                for (int i = 1; i < totalCriterios; i++) {
+                    for (int j = 1; j < totalCriterios; j++) {
+                        if (i == j) {
+                            matrizPareada[i][j] = 1;
+                            matrizPareadaDefault[i - 1][j - 1] = 1;
+                        } else {
+                            if (j > i) {
+                                Criterio criterio1 = (Criterio) matrizPareada[i][0];
+                                Criterio criterio2 = (Criterio) matrizPareada[0][j];
+                                Puntuacion puntuacion = buscarPuntuacion(puntuacionesDeProblema, criterio1, criterio2);
 
-                            matrizPareada[i][j]=puntuacion.getValor();
-                            matrizPareadaDefault[i-1][j-1]+=puntuacion.getValor();
-                            if(puntuacion.getValor()<1){
-                                matrizPareada[j][i]=(float)1/puntuacion.getValor();
-                                matrizPareadaDefault[j-1][i-1]+=(float)1/puntuacion.getValor();
-                            }else{
-                                matrizPareada[j][i]=1+"/"+puntuacion.getValor();
-                                matrizPareadaDefault[j-1][i-1]+=(float)1/puntuacion.getValor();
+                                matrizPareadaDefault[i - 1][j - 1] += puntuacion.getValor();
+                                matrizPareada[i][j] = matrizPareadaDefault[i - 1][j - 1];
+                                if (puntuacion.getValor() < 1) {
+                                    matrizPareadaDefault[j - 1][i - 1] += (float) 1 / puntuacion.getValor();
+                                    matrizPareada[j][i] = matrizPareadaDefault[j - 1][i - 1];
+
+                                } else {
+                                    matrizPareadaDefault[j - 1][i - 1] += (float) 1 / puntuacion.getValor();
+                                    matrizPareada[j][i] = matrizPareadaDefault[j - 1][i - 1];
+                                }
+
+                            } else {
+                                matrizPareada[i][j] += "";
+
                             }
-
-                        }else{
-                            matrizPareada[i][j]+="";
-
                         }
                     }
-                }
 
+                }
             }
         }
 
@@ -189,9 +240,24 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
             prioridadesCompletas[i][1]=prioridades[i];
         }
 
+        float mayor = prioridades[0];
+        Criterio ganador = null;
+        ganador = (Criterio) matrizPareada[1][0];
+
+        for (int i = 0; i < prioridades.length; i++) {
+            if(mayor<prioridades[i]){
+                mayor = prioridades[i];
+                ganador= (Criterio) matrizPareada[i+1][0];
+            }
+        }
+
+        resultados.add(matrizPareada);
         resultados.add(matrizPareadaDefault);
         resultados.add(prioridadesCompletas);
         resultados.add(resultados2.get(1));
+        resultados.add(ganador);
+        resultados.add(estadisticasDecisor);
+
 
         return resultados;
     }
@@ -200,6 +266,11 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
     public List<Object> vectorPropio(String tokenProblema) {
 
         return null;
+    }
+
+    @Override
+    public List<Puntuacion> puntuacionesDecisor(String tokenProblema, String emailDecisor) {
+        return puntuacionDAO.puntuacionesDeDecisorProblema(emailDecisor,tokenProblema);
     }
 
 

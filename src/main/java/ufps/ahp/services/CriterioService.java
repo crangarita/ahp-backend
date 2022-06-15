@@ -8,6 +8,6 @@ import java.util.List;
 public interface CriterioService {
     public List<Criterio> listar();
     public Criterio buscar(int idCriterio);
-    public void guardar(Criterio ct);
+    public Criterio guardar(Criterio ct);
     public void eliminar(Criterio a);
 }

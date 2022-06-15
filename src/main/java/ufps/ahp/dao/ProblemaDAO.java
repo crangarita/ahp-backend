@@ -20,5 +20,10 @@ public interface ProblemaDAO extends JpaRepository<Problema, Integer> {
     @Query(value="select dp.decisor from DecisorProblema dp where dp.problema.idProblema=:token")
     List<Decisor> decisorPorProblema (@Param("token")String token);
 
+    @Query(value="select p from Problema p where p.token=:token")
+    Problema encontrarProblema (@Param("token")String token);
+
     Problema findProblemaByToken(String token);
+
+    Problema findProblemaByIdProblema(int id);
 }

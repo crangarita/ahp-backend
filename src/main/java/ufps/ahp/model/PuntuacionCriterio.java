@@ -79,6 +79,13 @@ public class PuntuacionCriterio implements Serializable {
         this.valor = valor;
     }
 
+    public PuntuacionCriterio(Criterio criterio1Id, Criterio criterio2Id, int valor, Problema problema) {
+        this.criterio1Id = criterio1Id;
+        this.criterio2Id = criterio2Id;
+        this.valor = valor;
+        this.problema = problema;
+    }
+
     public Integer getIdPuntuacionDecisor() {
         return idPuntuacionDecisor;
     }

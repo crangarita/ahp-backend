@@ -1,7 +1,6 @@
 package ufps.ahp.services.imp;
 
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,16 +24,20 @@ public class ProblemaServiceImp implements ProblemaService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existeDecisor(String email, String token) {
-        if(problemaDAO.existeDecisor(email,token)==null)
-            return false;
-        return true;
+    public Decisor existeDecisor(String email, String token) {
+        return problemaDAO.existeDecisor(email, token);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Problema buscar(String token) {
-        return problemaDAO.findProblemaByToken(token);
+        return problemaDAO.encontrarProblema(token);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Problema buscarPorId(int id) {
+        return problemaDAO.findProblemaByIdProblema(id);
     }
 
     @Override

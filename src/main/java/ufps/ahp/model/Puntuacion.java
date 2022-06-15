@@ -7,15 +7,7 @@ package ufps.ahp.model;
  */
 
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -34,8 +26,8 @@ public class Puntuacion implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @NotNull
     @Column(name = "id_puntuacion")
     private Integer idPuntuacion;
     @Basic(optional = false)
@@ -73,7 +65,7 @@ public class Puntuacion implements Serializable {
         return valor;
     }
 
-    public void setValor(int valor) {
+    public void setValor(float valor) {
         this.valor = valor;
     }
 

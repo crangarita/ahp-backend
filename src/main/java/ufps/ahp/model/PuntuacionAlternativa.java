@@ -75,7 +75,7 @@ public class PuntuacionAlternativa implements Serializable {
         return valor;
     }
 
-    public void setValor(int valor) {
+    public void setValor(float valor) {
         this.valor = valor;
     }
 
@@ -87,7 +87,7 @@ public class PuntuacionAlternativa implements Serializable {
         this.puntuacionAlternativaCriterio = puntuacionAlternativaCriterio;
     }
 
-    public Decisor getDecisor() {
+    public Decisor decisor() {
         return decisor;
     }
 

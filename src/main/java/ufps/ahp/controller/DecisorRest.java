@@ -72,7 +72,7 @@ public class DecisorRest {
     @GetMapping("/problema/{token}/{email}")
     public ResponseEntity<?> eliminarDecisorProblema(@PathVariable String token, @PathVariable String email) {
 
-        Decisor d = decisorService.buscarDecisorProblema(token,email);
+        Decisor d = decisorService.buscarDecisorProblema(token,email).orElse(null);
         if(d == null){
             return new ResponseEntity<>(new Mensaje("El decisor no pertenece a este problema"),HttpStatus.NOT_FOUND);
         }
@@ -92,12 +92,22 @@ public class DecisorRest {
         Problema p = problemaService.buscar(descisorDTO.getProblema());
         Usuario u = usuarioService.findByEmail(descisorDTO.getEmail());
 
-        if(problemaService.existeDecisor(descisorDTO.getEmail(),p.getToken())){
-            return new ResponseEntity(new Mensaje("El decisor ya se encuentra registrado en este problema"), HttpStatus.BAD_REQUEST);
-        }
+        List<DecisorProblema> decisorProblemas = decisorProblemaService.listar();
 
-        if(u!=null){
-            u.setDecisor(new Decisor(descisorDTO.getNombre(), descisorDTO.getEmail()));
+        if(d!=null){
+            for (DecisorProblema problema: decisorProblemas) {
+
+
+                if(problema.getDecisor().getEmail().equals(d.getEmail())
+                        && problema.getProblema().getToken().equals(p.getToken())
+                ){
+                    return new ResponseEntity(new Mensaje("El decisor "+descisorDTO.getEmail()+" ya se encuentra registrado en este problema"), HttpStatus.BAD_REQUEST);
+                }
+
+            }
+            if(u!=null){
+                u.setDecisor(d);
+            }
         }
 
         emailServiceImp.enviarEmail("Inscripción descisor problema "+p.getDescripcion(),
@@ -122,7 +132,7 @@ public class DecisorRest {
                         " <br> ingresa al siguiente link para acceder al intrumento:  \n" +
                         "            </p>\n" +
                         "            <div style=\"margin: 2rem auto; width: 120px; background-color: #4f46e5; padding: 8px; border-radius: 6px; \">\n" +
-                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"problem/access/"+p.getIdProblema()+"\">Continuar</a>\n" +
+                        "                <a style=\"color: #ffffff; text-decoration: none\" href=\""+urlFrontend+"qualify/"+p.getToken()+"/"+descisorDTO.getEmail()+"\">Continuar</a>\n" +
                         "            </div>\n" +
                         "            <div style=\"width: 100%; border-top: 2px solid #a5b4fc; padding: 1rem 0\">\n" +
                         "                <p>Copyright © 2022 Analytic Hierarchy Process <br> Todos los derechos reservados.</p>\n" +
@@ -137,15 +147,16 @@ public class DecisorRest {
 
                 Decisor de = null;
                 if(u!=null)
-                    de =new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail(),u);
+                    de = new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail(),u);
                 else
                     de = (new Decisor(descisorDTO.getNombre(),descisorDTO.getEmail()));
 
                 if(d!=null){
-                    decisorProblemaService.guardar(new DecisorProblema(de,p));
+                    decisorProblemaService.guardar(new DecisorProblema(d,p));
                 }else{
                     decisorService.guardar(de);
-                    decisorProblemaService.guardar(new DecisorProblema(de,p));
+                    Decisor decisor = decisorService.buscarPorEmail(de.getEmail());
+                    decisorProblemaService.guardar(new DecisorProblema(decisor,p));
                 }
 
         return ResponseEntity.ok(new Mensaje("Inscripción realizada correctamente"));

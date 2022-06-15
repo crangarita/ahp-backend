@@ -7,6 +7,7 @@ import ufps.ahp.model.Decisor;
 import ufps.ahp.model.DecisorProblema;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DecisorDAO extends JpaRepository<Decisor, Integer> {
     Decisor findDecisorByEmail(String email);
@@ -15,5 +16,5 @@ public interface DecisorDAO extends JpaRepository<Decisor, Integer> {
     List<DecisorProblema> decisoresDeUsuario(@Param("email") String email);
 
     @Query("select dp.decisor from DecisorProblema dp where dp.problema.token=:token and dp.decisor.email=:email")
-    Decisor buscarDecisorProblema(@Param("token") String token, @Param("email") String email);
+    Optional<Decisor> buscarDecisorProblema(@Param("token") String token, @Param("email") String email);
 }

@@ -45,14 +45,16 @@ public class PuntuacionAlternativaCriterio implements Serializable {
     @Basic(optional = false)
     @Column(name = "id_puntuacion_alt_crit")
     private Integer idPuntuacionAltCrit;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "alternativa_1")
-    private int alternativa1;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "alternativa_2")
-    private int alternativa2;
+
+
+    @JoinColumn(name = "alternativa_1", referencedColumnName = "id_alternativa")
+    @ManyToOne(optional = false)
+    private Alternativa alternativa1;
+
+    @JoinColumn(name = "alternativa_2", referencedColumnName = "id_alternativa")
+    @ManyToOne(optional = false)
+    private Alternativa alternativa2;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "valor")
@@ -60,6 +62,11 @@ public class PuntuacionAlternativaCriterio implements Serializable {
     @JoinColumn(name = "problema", referencedColumnName = "id_problema")
     @ManyToOne(optional = false)
     private Problema problema;
+
+    @JoinColumn(name = "criterio", referencedColumnName = "id_criterio")
+    @ManyToOne(optional = false)
+    private Criterio criterio;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "puntuacionAlternativaCriterio")
     private Collection<PuntuacionAlternativa> puntuacionAlternativaCollection;
 
@@ -70,11 +77,19 @@ public class PuntuacionAlternativaCriterio implements Serializable {
         this.idPuntuacionAltCrit = idPuntuacionAltCrit;
     }
 
-    public PuntuacionAlternativaCriterio(Integer idPuntuacionAltCrit, int alternativa1, int alternativa2, int valor) {
+    public PuntuacionAlternativaCriterio(Integer idPuntuacionAltCrit, Alternativa alternativa1, Alternativa alternativa2, int valor) {
         this.idPuntuacionAltCrit = idPuntuacionAltCrit;
         this.alternativa1 = alternativa1;
         this.alternativa2 = alternativa2;
         this.valor = valor;
+    }
+
+    public PuntuacionAlternativaCriterio(Alternativa alternativa1, Alternativa alternativa2, int valor, Problema problema, Criterio criterio) {
+        this.alternativa1 = alternativa1;
+        this.alternativa2 = alternativa2;
+        this.valor = valor;
+        this.problema = problema;
+        this.criterio = criterio;
     }
 
     public Integer getIdPuntuacionAltCrit() {
@@ -85,19 +100,19 @@ public class PuntuacionAlternativaCriterio implements Serializable {
         this.idPuntuacionAltCrit = idPuntuacionAltCrit;
     }
 
-    public int getAlternativa1() {
+    public Alternativa getAlternativa1() {
         return alternativa1;
     }
 
-    public void setAlternativa1(int alternativa1) {
+    public void setAlternativa1(Alternativa alternativa1) {
         this.alternativa1 = alternativa1;
     }
 
-    public int getAlternativa2() {
+    public Alternativa getAlternativa2() {
         return alternativa2;
     }
 
-    public void setAlternativa2(int alternativa2) {
+    public void setAlternativa2(Alternativa alternativa2) {
         this.alternativa2 = alternativa2;
     }
 
@@ -117,9 +132,12 @@ public class PuntuacionAlternativaCriterio implements Serializable {
         this.problema = problema;
     }
 
-    @XmlTransient
-    public Collection<PuntuacionAlternativa> getPuntuacionAlternativaCollection() {
+    public Collection<PuntuacionAlternativa> puntuacionAlternativaCollection() {
         return puntuacionAlternativaCollection;
+    }
+
+    public Criterio getCriterio() {
+        return criterio;
     }
 
     public void setPuntuacionAlternativaCollection(Collection<PuntuacionAlternativa> puntuacionAlternativaCollection) {

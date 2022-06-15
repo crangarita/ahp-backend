@@ -29,8 +29,8 @@ public class CriterioServiceImp implements CriterioService {
 
     @Override
     @Transactional
-    public void guardar(Criterio ct) {
-        CriterioDAO.save(ct);
+    public Criterio guardar(Criterio ct) {
+        return CriterioDAO.save(ct);
     }
 
     @Override

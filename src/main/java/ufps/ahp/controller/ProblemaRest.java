@@ -8,17 +8,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ufps.ahp.model.Alternativa;
-import ufps.ahp.model.Criterio;
-import ufps.ahp.model.Problema;
-import ufps.ahp.model.PuntuacionCriterio;
+import ufps.ahp.dao.PuntuacionAlternativaCriterioDAO;
+import ufps.ahp.model.*;
 import ufps.ahp.security.dto.Mensaje;
 import ufps.ahp.security.model.Usuario;
 import ufps.ahp.security.servicio.UsuarioService;
-import ufps.ahp.services.AlternativaService;
-import ufps.ahp.services.CriterioService;
-import ufps.ahp.services.ProblemaService;
-import ufps.ahp.services.PuntuacionCriterioServicio;
+import ufps.ahp.services.*;
 
 import javax.validation.Valid;
 import java.util.Date;
@@ -48,6 +43,16 @@ public class ProblemaRest {
     @Autowired
     PuntuacionCriterioServicio puntuacionCriterioServicio;
 
+    @Autowired
+    PuntuacionAlternativaCriterioServicio puntuacionAlternativaCriterioServicio;
+
+    @Autowired
+    DecisorService decisorService;
+
+    @Autowired
+    PuntuacionAlternativaCriterioDAO puntuacionAlternativaCriterioDAO;
+
+
     @GetMapping
     public ResponseEntity<?> listar(){
         return ResponseEntity.ok(problemaService.listar());
@@ -57,6 +62,12 @@ public class ProblemaRest {
     @GetMapping(path = "/{token}")
     public ResponseEntity<?> encontrarProblema(@PathVariable String token){
         return ResponseEntity.ok(problemaService.buscar(token));
+    }
+
+    @CrossOrigin
+    @GetMapping(path = "/{id}/id")
+    public ResponseEntity<?> encontrarProblemaId(@PathVariable int id){
+        return ResponseEntity.ok(problemaService.buscarPorId(id));
     }
 
     @PostMapping
@@ -80,21 +91,51 @@ public class ProblemaRest {
     public ResponseEntity<?> agregarCriteriosDeProblema(@PathVariable String token, @RequestBody List<Criterio> criterios){
 
         Problema p = problemaService.buscar(token);
-        for(Criterio c: criterios){
-            c.setProblema(p);
-            criterioService.guardar(c);
-        }
-        puntuacionCriterioServicio.agregarCriteriosPuntuacion(p.getIdProblema());
+        if(p.criterioCollection().size()==0){
+            for(Criterio c: criterios){
+                c.setProblema(p);
+                criterioService.guardar(c);
+            }
+            puntuacionCriterioServicio.agregarCriteriosPuntuacion(p.getIdProblema());
+        }else{
+            for(Criterio c1: criterios){
+                c1.setProblema(p);
+                Criterio c = criterioService.guardar(c1);
+                puntuacionAlternativaCriterioDAO.llenarPuntuacionAlternativa(p.getIdProblema(),c.getIdCriterio());
+
+            }
+            problemaService.guardar(p);
+            p = problemaService.buscar(token);
+
+            for(Criterio c: criterios){
+                puntuacionCriterioServicio.agregarCriteriosPuntuacionIndividual(c.getIdCriterio(), criterios);
+            }
+
+            }
         return ResponseEntity.ok(criterios);
     }
 
     @PostMapping(path="/alternativas/{token}")
     public ResponseEntity<?> agregarAlternativasDeProblema(@PathVariable String token, @RequestBody List<Alternativa> alternativas){
         Problema p = problemaService.buscar(token);
-        for(Alternativa alt: alternativas){
-            alt.setProblema(p);
-            alternativaService.guardar(alt);
+
+        if(p.alternativaCollection().size()==0){
+            for(Alternativa alt: alternativas){
+                alt.setProblema(p);
+                alternativaService.guardar(alt);
+            }
+            puntuacionAlternativaCriterioServicio.llenarPuntuacionAlternativa(p.getIdProblema());
+        }else{
+            for(Alternativa alt1: alternativas){
+                alt1.setProblema(p);
+                alternativaService.guardar(alt1);
+            }
+
+            for(Alternativa alt: alternativas){
+                puntuacionAlternativaCriterioServicio.llenarPuntuacionAlternativaIndividual(alt.getIdAlternativa(), alternativas);
+            }
         }
+
         return ResponseEntity.ok(alternativas);
     }
 
@@ -150,11 +191,40 @@ public class ProblemaRest {
         return ResponseEntity.ok(problemaService.buscar(token).alternativaCollection());
     }
 
+    @GetMapping(path ="/decisores/{token}")
+    public ResponseEntity<?> decisoresPorProblema(@PathVariable String token){
+        return ResponseEntity.ok(problemaService.buscar(token).decisorProblemas());
+    }
 
     @GetMapping(path="/criteriosComparados/{idProblema}") // Metodo para obtener los pares a comparar en la puntuacion de criterios
     public ResponseEntity<?> obtenerParesCriterios(@PathVariable String idProblema){
         Problema p = problemaService.buscar(idProblema);
-
         return ResponseEntity.ok(puntuacionCriterioServicio.obtenerParesCriterios(idProblema));
+    }
+
+    @GetMapping(path="/alternativaComparadas/{idProblema}") // Metodo para obtener los pares a comparar en la puntuacion de criterios
+    public ResponseEntity<?> obtenerParesAlternativas(@PathVariable String idProblema){
+        Problema p = problemaService.buscar(idProblema);
+        return ResponseEntity.ok(puntuacionCriterioServicio.obtenerParesAlternativa(idProblema));
+    }
+
+    @GetMapping(path ="/accesoproblema/{token}/{emailDecisor}")
+    public ResponseEntity<?> accesoAProblemaDecisor(@PathVariable String token, @PathVariable String emailDecisor){
+        Problema p = problemaService.buscar(token);
+
+        if(p==null) return new ResponseEntity<>(new Mensaje("El problema no existe"), HttpStatus.NOT_FOUND);
+
+        Decisor d = decisorService.buscarDecisorProblema(token,emailDecisor).orElse(null);
+
+        if(p.getFechaFinalizacion().before(new Date())){
+            return new ResponseEntity<>(new Mensaje("La calificacion de este problema ha finalizado"), HttpStatus.BAD_REQUEST);
+        }
+
+        if(d == null){
+            return new ResponseEntity<>(new Mensaje("El decisor no tiene acceso al problema seleccionado"), HttpStatus.UNAUTHORIZED);
+        }
+
+
+        return ResponseEntity.ok(new Mensaje("Bienvenido al problema"));
     }
 }

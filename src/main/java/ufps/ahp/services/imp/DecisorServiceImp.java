@@ -9,6 +9,7 @@ import ufps.ahp.model.DecisorProblema;
 import ufps.ahp.services.DecisorService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DecisorServiceImp implements DecisorService {
@@ -24,12 +25,13 @@ public class DecisorServiceImp implements DecisorService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<DecisorProblema> listarDecisoresDeUsuario(String email) {
         return decisorDAO.decisoresDeUsuario(email);
     }
 
     @Override
-    public Decisor buscarDecisorProblema(String token, String email) {
+    public Optional<Decisor> buscarDecisorProblema(String token, String email) {
         return decisorDAO.buscarDecisorProblema(token,email);
     }
 
@@ -49,7 +51,6 @@ public class DecisorServiceImp implements DecisorService {
 
     @Override
     @Transactional
-
     public void guardar(Decisor decisor) {
         decisorDAO.save(decisor);
     }
