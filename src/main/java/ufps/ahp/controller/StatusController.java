@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ufps.ahp.security.dto.Mensaje;
 
+
 @RestController
 //@CrossOrigin(origins = "http://angular-ahp.s3-website.us-east-2.amazonaws.com/")
-@RequestMapping(value= "/status",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value= "/health",produces = MediaType.APPLICATION_JSON_VALUE)
 @CrossOrigin
 public class StatusController {
 	
