@@ -1,3 +1,6 @@
+=\=\=\=\=\=\=
+<<<<<<<=HEAD
+>>>>>>>=branch 'main' of https\://github.com/siaweb-ufps/ahp-backend.git
 eclipse.preferences.version=1
 org.eclipse.jdt.core.compiler.codegen.methodParameters=generate
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=11
@@ -5,9 +8,6 @@ org.eclipse.jdt.core.compiler.compliance=11
 org.eclipse.jdt.core.compiler.problem.enablePreviewFeatures=disabled
 org.eclipse.jdt.core.compiler.problem.forbiddenReference=warning
 org.eclipse.jdt.core.compiler.problem.reportPreviewFeatures=ignore
-<<<<<<< HEAD
 org.eclipse.jdt.core.compiler.processAnnotations=enabled
-=======
->>>>>>> branch 'main' of https://github.com/siaweb-ufps/ahp-backend.git
 org.eclipse.jdt.core.compiler.release=disabled
 org.eclipse.jdt.core.compiler.source=11
