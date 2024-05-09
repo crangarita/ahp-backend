@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ufps.ahp.dao.PuntuacionAlternativaCriterioDAO;
 import ufps.ahp.dao.PuntuacionAlternativaDAO;
+import ufps.ahp.dao.PuntuacionDAO;
 import ufps.ahp.model.*;
 import ufps.ahp.negocio.PlayGround;
 import ufps.ahp.services.DecisorService;
@@ -21,6 +22,9 @@ public class PuntuacionAlternativaServicioImp implements PuntuacionAlternativaSe
 
     @Autowired
     PuntuacionAlternativaDAO puntuacionAlternativaDAO;
+    
+    @Autowired
+    PuntuacionDAO puntuacionDAO;
 
     @Autowired
     PuntuacionServicio puntuacionServicio;
@@ -146,7 +150,23 @@ public class PuntuacionAlternativaServicioImp implements PuntuacionAlternativaSe
         List<Object> resultados = new ArrayList<>();
         List<Criterio> criterios = (List<Criterio>) p.criterioCollection();
         List<Alternativa>alternativas  = (List<Alternativa>) p.alternativaCollection();
-        List<DecisorProblema> decisores =(List<DecisorProblema>)(p.decisorProblemas());
+        
+        List<DecisorProblema> decisoresQ =(List<DecisorProblema>)(p.decisorProblemas());
+        
+        List<DecisorProblema> decisores =new ArrayList();
+        
+        
+        for(int x = 0; x < decisoresQ.size(); x++) {
+            Decisor decisor = decisoresQ.get(x).getDecisor();
+            String emailDecisor = decisor.getEmail();
+            
+            List<Puntuacion> puntuaciones = puntuacionDAO.puntuacionesDeUsuario(emailDecisor, token);
+            
+            if (!puntuaciones.isEmpty()) {
+            	decisores.add(decisoresQ.get(x));
+            }
+
+        } 
 
         int totalAlternativas =p.alternativaCollection().size()+1;
 

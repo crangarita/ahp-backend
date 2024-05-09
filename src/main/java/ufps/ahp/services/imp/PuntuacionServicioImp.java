@@ -68,7 +68,8 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
         List<Object> resultados = new ArrayList<>();
 
         List<Puntuacion> puntuacionesDeProblema = puntuacionDAO.puntuacionesDeUsuario(emailDecisor,token);
-
+        log.info(emailDecisor);
+        log.info(token);
         for(Puntuacion ps: puntuacionesDeProblema){
             log.info(ps.getIdPuntuacion()+" -----");
         }
@@ -146,7 +147,7 @@ public class PuntuacionServicioImp implements PuntuacionServicio {
             }
         }
 
-
+        
 
         resultados.add(matrizPareada);
         resultados.add(matrizPareadaDefault);
